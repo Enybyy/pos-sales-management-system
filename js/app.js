@@ -342,8 +342,12 @@ function abrirModalEditar(id) {
     document.getElementById('editar-fecha').value = venta.fecha ? venta.fecha.split('T')[0] : '';
     document.getElementById('editar-monto').value = venta.monto;
     document.getElementById('editar-vendedor').value = venta.vendedor || '';
-    document.getElementById('editar-hora-inicio').value = venta.hora_inicio || '';
-    document.getElementById('editar-hora-fin').value = venta.hora_fin || '';
+
+    // Asignar hora inicio
+    descomponerHoraParaSelects(venta.hora_inicio, 'editar-hora-inicio');
+    // Asignar hora fin
+    descomponerHoraParaSelects(venta.hora_fin, 'editar-hora-fin');
+
     document.getElementById('editar-notas').value = venta.notas || '';
 
     const modal = document.getElementById('modal-editar');
@@ -390,6 +394,45 @@ function mostrarToast(mensaje, tipo = 'success') {
 // ==========================================
 // EVENTOS
 // ==========================================
+// Auxiliar: Construye HH:mm (24h) desde selects (h, m, ampm)
+function construirHoraDesdeSelects(prefixId) {
+    const h = document.getElementById(`${prefixId}-h`).value;
+    const m = document.getElementById(`${prefixId}-m`).value;
+    const ampm = document.getElementById(`${prefixId}-ampm`).value;
+
+    if (!h || !m) return '';
+
+    let horas = parseInt(h);
+    if (ampm === 'PM' && horas !== 12) horas += 12;
+    if (ampm === 'AM' && horas === 12) horas = 0;
+
+    return `${String(horas).padStart(2, '0')}:${m}`;
+}
+
+// Auxiliar: Llena los selects desde HH:mm (24h)
+function descomponerHoraParaSelects(hora24, prefixId) {
+    if (!hora24) {
+        document.getElementById(`${prefixId}-h`).value = '';
+        document.getElementById(`${prefixId}-m`).value = '00';
+        document.getElementById(`${prefixId}-ampm`).value = 'AM';
+        return;
+    }
+
+    const [h, m] = hora24.split(':');
+    let horas = parseInt(h);
+    const ampm = horas >= 12 ? 'PM' : 'AM';
+
+    horas = horas % 12;
+    horas = horas ? horas : 12; // el 0 se vuelve 12
+
+    document.getElementById(`${prefixId}-h`).value = horas;
+    document.getElementById(`${prefixId}-m`).value = m;
+    document.getElementById(`${prefixId}-ampm`).value = ampm;
+}
+
+// ==========================================
+// EVENTOS
+// ==========================================
 function configurarEventos() {
     // Formulario de nueva venta
     document.getElementById('form-venta').addEventListener('submit', async (e) => {
@@ -399,15 +442,16 @@ function configurarEventos() {
             fecha: document.getElementById('fecha').value,
             monto: parseFloat(document.getElementById('monto').value),
             vendedor: document.getElementById('vendedor').value.trim(),
-            hora_inicio: document.getElementById('hora-inicio').value,
-            hora_fin: document.getElementById('hora-fin').value,
+            hora_inicio: construirHoraDesdeSelects('hora-inicio'),
+            hora_fin: construirHoraDesdeSelects('hora-fin'),
             notas: document.getElementById('notas').value.trim()
         };
 
         try {
             await guardarVenta(ventaData);
             e.target.reset();
-            document.getElementById('fecha').valueAsDate = new Date();
+            // Restablecer fecha a hoy
+            establecerFechaLocalInput('fecha');
         } catch (error) {
             // Error ya manejado en guardarVenta
         }
@@ -422,8 +466,8 @@ function configurarEventos() {
             fecha: document.getElementById('editar-fecha').value,
             monto: parseFloat(document.getElementById('editar-monto').value),
             vendedor: document.getElementById('editar-vendedor').value.trim(),
-            hora_inicio: document.getElementById('editar-hora-inicio').value,
-            hora_fin: document.getElementById('editar-hora-fin').value,
+            hora_inicio: construirHoraDesdeSelects('editar-hora-inicio'),
+            hora_fin: construirHoraDesdeSelects('editar-hora-fin'),
             notas: document.getElementById('editar-notas').value.trim()
         };
 
