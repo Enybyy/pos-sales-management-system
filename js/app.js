@@ -18,6 +18,22 @@ document.addEventListener('DOMContentLoaded', () => {
     inicializarApp();
 });
 
+// Lógica de Temporadas para Ventanilla, Perú
+function obtenerTemporada(fechaStr) {
+    if (!fechaStr) return 'Desconocida';
+    // fechaStr YYYY-MM-DD
+    const mes = parseInt(fechaStr.split('-')[1]);
+
+    // Enero(1) - Marzo(3): Verano
+    if (mes >= 1 && mes <= 3) return 'Verano ☀️';
+    // Abril(4) - Junio(6): Otoño
+    if (mes >= 4 && mes <= 6) return 'Otoño 🍂';
+    // Julio(7) - Septiembre(9): Invierno
+    if (mes >= 7 && mes <= 9) return 'Invierno 🌧️';
+    // Octubre(10) - Diciembre(12): Primavera
+    return 'Primavera 🌸';
+}
+
 async function inicializarApp() {
     // Mostrar fecha actual
     mostrarFechaActual();
@@ -444,7 +460,8 @@ function configurarEventos() {
             vendedor: document.getElementById('vendedor').value.trim(),
             hora_inicio: construirHoraDesdeSelects('hora-inicio'),
             hora_fin: construirHoraDesdeSelects('hora-fin'),
-            notas: document.getElementById('notas').value.trim()
+            notas: document.getElementById('notas').value.trim(),
+            temporada: obtenerTemporada(document.getElementById('fecha').value)
         };
 
         try {
@@ -462,13 +479,15 @@ function configurarEventos() {
         e.preventDefault();
 
         const id = document.getElementById('editar-id').value;
+        const fecha = document.getElementById('editar-fecha').value;
         const ventaData = {
-            fecha: document.getElementById('editar-fecha').value,
+            fecha: fecha,
             monto: parseFloat(document.getElementById('editar-monto').value),
             vendedor: document.getElementById('editar-vendedor').value.trim(),
             hora_inicio: construirHoraDesdeSelects('editar-hora-inicio'),
             hora_fin: construirHoraDesdeSelects('editar-hora-fin'),
-            notas: document.getElementById('editar-notas').value.trim()
+            notas: document.getElementById('editar-notas').value.trim(),
+            temporada: obtenerTemporada(fecha) // Recalcular temporada al editar
         };
 
         try {
@@ -478,21 +497,45 @@ function configurarEventos() {
             // Error ya manejado en actualizarVenta
         }
     });
-
-    // Cerrar modal al hacer clic fuera
-    document.getElementById('modal-editar').addEventListener('click', (e) => {
-        if (e.target.id === 'modal-editar') {
-            cerrarModal();
-        }
-    });
-
-    // Cerrar modal con Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            cerrarModal();
-        }
-    });
 }
+
+// ==========================================
+// EXPORTAR Y BACKUP
+// ==========================================
+function exportarDatos() {
+    if (ventasCache.length === 0) {
+        mostrarToast('No hay datos para exportar', 'error');
+        return;
+    }
+
+    const dataStr = JSON.stringify(ventasCache, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+    const exportFileDefaultName = `backup_molleventas_${new Date().toISOString().split('T')[0]}.json`;
+
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+
+    mostrarToast('Backup descargado correctamente 📦', 'success');
+}
+
+window.exportarDatos = exportarDatos; // Exponer globalmente
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('modal-editar').addEventListener('click', (e) => {
+    if (e.target.id === 'modal-editar') {
+        cerrarModal();
+    }
+});
+
+// Cerrar modal con Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        cerrarModal();
+    }
+});
 
 // Exponer funciones al scope global para los onclick en HTML
 window.filtrarVentas = filtrarVentas;
