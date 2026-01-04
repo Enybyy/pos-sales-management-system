@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🍗 MolleVentas - Sistema de Ventas</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
     <!-- Header -->
-    <header class="bg-gradient-to-r from-amber-600 to-orange-500 text-white shadow-lg">
+    <header class="bg-gradient-to-r from-amber-600 to-orange-500 text-white shadow-lg sticky top-0 z-40">
         <div class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -21,20 +25,34 @@
                         <p class="text-amber-100 text-sm">Sistema de Ventas - Mollejitas & Más</p>
                     </div>
                 </div>
-                <div class="text-right hidden sm:block">
-                    <p class="text-amber-100 text-sm">Hoy es</p>
-                    <p id="fecha-actual" class="font-semibold"></p>
+                <div class="flex items-center gap-4">
+                    <button onclick="abrirDashboard()"
+                        class="hidden md:flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-all backdrop-blur-sm font-medium">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Análisis</span>
+                    </button>
+                    <div class="text-right hidden sm:block">
+                        <p class="text-amber-100 text-sm">Hoy es</p>
+                        <p id="fecha-actual" class="font-semibold"></p>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-8 relative">
+        <!-- Floating FAB for Mobile Analytics -->
+        <button onclick="abrirDashboard()"
+            class="md:hidden fixed bottom-24 right-4 bg-purple-600 text-white p-4 rounded-full shadow-lg z-30 hover:bg-purple-700 transition-all">
+            <i class="fas fa-chart-pie text-xl"></i>
+        </button>
+
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- Ventas del Día -->
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-shadow">
+            <div
+                class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-shadow">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium">Ventas de Hoy</p>
@@ -47,7 +65,8 @@
             </div>
 
             <!-- Ventas del Mes -->
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow">
+            <div
+                class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium">Ventas del Mes</p>
@@ -60,7 +79,8 @@
             </div>
 
             <!-- Total de Registros -->
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-shadow">
+            <div
+                class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-shadow">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium">Total Registros</p>
@@ -81,15 +101,24 @@
                     <i class="fas fa-plus-circle text-amber-500"></i>
                     Registrar Venta del Día
                 </h2>
-                
+
                 <form id="form-venta" class="space-y-5">
-                    <!-- Fecha -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-calendar-alt text-amber-500 mr-1"></i> Fecha
-                        </label>
-                        <input type="date" id="fecha" required
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none">
+                    <!-- Fecha y Venta Normal -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calendar-alt text-amber-500 mr-1"></i> Fecha
+                            </label>
+                            <input type="date" id="fecha" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user text-blue-500 mr-1"></i> Vendedor
+                            </label>
+                            <input type="text" id="vendedor" placeholder="Ej: Marta"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none">
+                        </div>
                     </div>
 
                     <!-- Monto -->
@@ -101,44 +130,36 @@
                             class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none text-2xl font-bold text-green-600">
                     </div>
 
-                    <!-- Vendedor -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-user text-blue-500 mr-1"></i> Vendedor
-                        </label>
-                        <input type="text" id="vendedor" placeholder="Ej: Marta" 
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none">
-                    </div>
-
                     <!-- Horario -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-clock text-orange-500 mr-1"></i> Hora Inicio
-                            </label>
-                            <input type="time" id="hora-inicio"
-                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-clock text-orange-500 mr-1"></i> Hora Fin
-                            </label>
-                            <input type="time" id="hora-fin"
-                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none">
+                    <div class="bg-orange-50 p-4 rounded-xl border border-orange-100">
+                        <p class="text-sm font-semibold text-orange-800 mb-3 flex items-center gap-2">
+                            <i class="fas fa-stopwatch"></i> Análisis de Horario
+                        </p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Hora Salida</label>
+                                <input type="time" id="hora-inicio"
+                                    class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Hora Término</label>
+                                <input type="time" id="hora-fin"
+                                    class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white">
+                            </div>
                         </div>
                     </div>
 
                     <!-- Notas -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-sticky-note text-yellow-500 mr-1"></i> Notas (Opcional)
+                            <i class="fas fa-sticky-note text-yellow-500 mr-1"></i> Notas
                         </label>
                         <textarea id="notas" rows="2" placeholder="Ej: Día lluvioso, poca gente..."
                             class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none resize-none"></textarea>
                     </div>
 
                     <!-- Botón -->
-                    <button type="submit" 
+                    <button type="submit"
                         class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 rounded-xl font-bold text-lg hover:from-amber-600 hover:to-orange-600 transition-all transform hover:scale-[1.02] shadow-lg flex items-center justify-center gap-2">
                         <i class="fas fa-save"></i>
                         Guardar Venta
@@ -147,41 +168,129 @@
             </div>
 
             <!-- Historial Reciente -->
-            <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col h-full">
                 <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                     <i class="fas fa-history text-amber-500"></i>
                     Historial de Ventas
                 </h2>
-                
+
                 <!-- Filtros -->
                 <div class="flex gap-2 mb-4 flex-wrap">
-                    <button onclick="filtrarVentas('todos')" class="filtro-btn active px-4 py-2 rounded-full text-sm font-medium bg-amber-500 text-white transition-all">
-                        Todos
-                    </button>
-                    <button onclick="filtrarVentas('semana')" class="filtro-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-600 hover:bg-amber-100 transition-all">
-                        Esta Semana
-                    </button>
-                    <button onclick="filtrarVentas('mes')" class="filtro-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-600 hover:bg-amber-100 transition-all">
-                        Este Mes
-                    </button>
+                    <button onclick="filtrarVentas('todos')"
+                        class="filtro-btn active px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500 text-white transition-all">Todos</button>
+                    <button onclick="filtrarVentas('semana')"
+                        class="filtro-btn px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-amber-100 transition-all">Semana</button>
+                    <button onclick="filtrarVentas('mes')"
+                        class="filtro-btn px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-amber-100 transition-all">Mes</button>
                 </div>
 
                 <!-- Lista de Ventas -->
-                <div id="lista-ventas" class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
-                    <!-- Las ventas se cargarán aquí dinámicamente -->
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-receipt text-5xl mb-4"></i>
-                        <p>No hay ventas registradas aún</p>
-                        <p class="text-sm">¡Registra tu primera venta!</p>
-                    </div>
+                <div id="lista-ventas" class="space-y-3 flex-1 overflow-y-auto pr-2 min-h-[300px] max-h-[600px]">
+                    <!-- Contenido dinámico -->
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal de Edición -->
+    <!-- Modal de Dashboard / Analíticas -->
+    <div id="modal-dashboard"
+        class="fixed inset-0 bg-gray-900 bg-opacity-95 hidden z-50 overflow-y-auto backdrop-blur-sm">
+        <div class="min-h-screen px-4 py-8">
+            <!-- Header Dashboard -->
+            <div class="container mx-auto max-w-6xl mb-8 flex justify-between items-center text-white">
+                <div>
+                    <h2
+                        class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500">
+                        <i class="fas fa-chart-line mr-2 text-amber-400"></i>Dashboard de Ventas
+                    </h2>
+                    <p class="text-gray-400 text-sm mt-1">Análisis inteligente de tu negocio</p>
+                </div>
+                <button onclick="cerrarDashboard()"
+                    class="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Contenido Dashboard -->
+            <div class="container mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- KPI Cards -->
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
+                    <!-- Mejor Día -->
+                    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
+                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Mejor Día para Vender</p>
+                        <p id="kpi-mejor-dia" class="text-2xl font-bold text-amber-400">--</p>
+                        <p id="kpi-mejor-dia-desc" class="text-xs text-gray-500 mt-1">Base: Promedio de ventas</p>
+                    </div>
+                    <!-- Hora Ideal Salida -->
+                    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
+                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Hora Ideal de Salida</p>
+                        <p id="kpi-hora-ideal" class="text-2xl font-bold text-green-400">--:--</p>
+                        <p class="text-xs text-gray-500 mt-1">Mayor eficiencia en ventas</p>
+                    </div>
+                    <!-- Velocidad de Venta -->
+                    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
+                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Velocidad Promedio</p>
+                        <p id="kpi-velocidad" class="text-2xl font-bold text-blue-400">S/ 0 / h</p>
+                        <p class="text-xs text-gray-500 mt-1">Soles generados por hora</p>
+                    </div>
+                    <!-- Duración Promedio -->
+                    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
+                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Duración Jornada</p>
+                        <p id="kpi-duracion" class="text-2xl font-bold text-purple-400">0h 0m</p>
+                        <p class="text-xs text-gray-500 mt-1">Tiempo promedio en calle</p>
+                    </div>
+                </div>
+
+                <!-- Gráfico: Ventas por Día (Barras) -->
+                <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 col-span-1 md:col-span-2 shadow-xl">
+                    <h3 class="text-lg font-semibold text-white mb-4">📊 Comportamiento Semanal</h3>
+                    <div class="h-64">
+                        <canvas id="chart-dias"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico: Salida vs Resultado (Scatter) -->
+                <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 col-span-1 shadow-xl">
+                    <h3 class="text-lg font-semibold text-white mb-4">🕒 Hora de Salida vs Ventas</h3>
+                    <p class="text-xs text-gray-400 mb-2">¿Salir antes garantiza más ventas?</p>
+                    <div class="h-64">
+                        <canvas id="chart-hora-impacto"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico: Duración vs Venta -->
+                <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 col-span-1 shadow-xl">
+                    <h3 class="text-lg font-semibold text-white mb-4">⏳ Duración vs Ingreso</h3>
+                    <p class="text-xs text-gray-400 mb-2">Relación tiempo invertido / Ganancia</p>
+                    <div class="h-64">
+                        <canvas id="chart-duracion"></canvas>
+                    </div>
+                </div>
+
+                <!-- Insights Texto -->
+                <div
+                    class="bg-gradient-to-br from-indigo-900 to-blue-900 rounded-2xl p-6 col-span-1 md:col-span-2 shadow-xl border border-indigo-700/50">
+                    <h3 class="text-lg font-semibold text-white mb-4">💡 Insights Generados por IA</h3>
+                    <div id="insights-container" class="space-y-3">
+                        <!-- Se llenará con JS -->
+                        <div class="flex items-start gap-3 text-indigo-100 bg-indigo-800/30 p-3 rounded-lg">
+                            <i class="fas fa-lightbulb text-yellow-400 mt-1"></i>
+                            <p class="text-sm">Registra más ventas incluyendo horarios de inicio y fin para obtener
+                                recomendaciones precisas sobre tu eficiencia.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición (Existente) -->
     <div id="modal-editar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform scale-95 opacity-0 transition-all modal-content">
+        <!-- ... (código existente del modal de edición se mantiene igual, no lo toco) ... -->
+        <div
+            class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform scale-95 opacity-0 transition-all modal-content">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold text-gray-800">
                     <i class="fas fa-edit text-amber-500 mr-2"></i>Editar Venta
@@ -190,28 +299,28 @@
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            
+
             <form id="form-editar" class="space-y-4">
                 <input type="hidden" id="editar-id">
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
                     <input type="date" id="editar-fecha" required
                         class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none">
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Monto (S/)</label>
                     <input type="number" id="editar-monto" step="0.01" min="0" required
                         class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none">
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Vendedor</label>
                     <input type="text" id="editar-vendedor"
                         class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none">
                 </div>
-                
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Hora Inicio</label>
@@ -224,19 +333,19 @@
                             class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none">
                     </div>
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
                     <textarea id="editar-notas" rows="2"
                         class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none resize-none"></textarea>
                 </div>
-                
+
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="cerrarModal()" 
+                    <button type="button" onclick="cerrarModal()"
                         class="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-all">
                         Cancelar
                     </button>
-                    <button type="submit" 
+                    <button type="submit"
                         class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium hover:from-amber-600 hover:to-orange-600 transition-all">
                         Guardar Cambios
                     </button>
@@ -246,7 +355,8 @@
     </div>
 
     <!-- Toast de Notificación -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all z-50 flex items-center gap-2">
+    <div id="toast"
+        class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all z-50 flex items-center gap-2">
         <i class="fas fa-check-circle"></i>
         <span id="toast-mensaje">Venta registrada correctamente</span>
     </div>
@@ -264,5 +374,7 @@
     </footer>
 
     <script src="js/app.js"></script>
+    <script src="js/analytics.js"></script>
 </body>
+
 </html>

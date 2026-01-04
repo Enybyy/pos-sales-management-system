@@ -434,3 +434,6 @@ window.filtrarVentas = filtrarVentas;
 window.abrirModalEditar = abrirModalEditar;
 window.cerrarModal = cerrarModal;
 window.confirmarEliminar = confirmarEliminar;
+
+// Acceso a datos para analíticas
+window.obtenerVentasGlobal = () => ventasCache;
