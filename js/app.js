@@ -23,7 +23,11 @@ async function inicializarApp() {
     mostrarFechaActual();
 
     // Establecer fecha de hoy en el formulario
-    document.getElementById('fecha').valueAsDate = new Date();
+    const hoy = new Date();
+    const year = hoy.getFullYear();
+    const month = String(hoy.getMonth() + 1).padStart(2, '0');
+    const day = String(hoy.getDate()).padStart(2, '0');
+    document.getElementById('fecha').value = `${year}-${month}-${day}`;
 
     // Cargar ventas existentes
     await cargarVentas();
@@ -43,24 +47,41 @@ function mostrarFechaActual() {
 }
 
 function formatearFecha(fecha) {
-    const date = new Date(fecha + 'T12:00:00'); // Asegurar zona horaria correcta al visualizar
+    // fecha viene como YYYY-MM-DD
+    const partes = fecha.split('-');
+    const date = new Date(partes[0], partes[1] - 1, partes[2]);
     const opciones = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
     return date.toLocaleDateString('es-ES', opciones);
 }
 
+function formatearHoraAmPm(hora24) {
+    if (!hora24) return '';
+    const [horas, minutos] = hora24.split(':');
+    const horasNum = parseInt(horas, 10);
+    const ampm = horasNum >= 12 ? 'PM' : 'AM';
+    const horas12 = horasNum % 12 || 12;
+    return `${horas12}:${minutos} ${ampm}`;
+}
+
 function obtenerDiaSemana(fecha) {
-    const date = new Date(fecha + 'T12:00:00');
+    const partes = fecha.split('-');
+    const date = new Date(partes[0], partes[1] - 1, partes[2]);
     const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     return dias[date.getDay()];
 }
 
 function esMismoDia(fecha1, fecha2) {
-    // fecha1 string YYYY-MM-DD, fecha2 Date object
-    const d1 = new Date(fecha1 + 'T00:00:00');
-    const d2 = new Date(fecha2);
-    return d1.getFullYear() === d2.getFullYear() &&
-        d1.getMonth() === d2.getMonth() &&
-        d1.getDate() === d2.getDate();
+    // fecha1: string YYYY-MM-DD
+    // fecha2: Date object
+    if (!fecha1) return false;
+    const partes = fecha1.split('-');
+    const d1Year = parseInt(partes[0]);
+    const d1Month = parseInt(partes[1]) - 1;
+    const d1Day = parseInt(partes[2]);
+
+    return d1Year === fecha2.getFullYear() &&
+        d1Month === fecha2.getMonth() &&
+        d1Day === fecha2.getDate();
 }
 
 function esEstaSemana(fecha) {
@@ -264,9 +285,9 @@ function renderizarVentas() {
                         </p>
                     ` : ''}
                     ${venta.hora_inicio || venta.hora_fin ? `
-                        <p class="text-gray-500 text-xs mt-1">
+                        <p class="text-gray-500 text-xs mt-1 bg-gray-50 inline-block px-2 py-1 rounded-lg border border-gray-100">
                             <i class="fas fa-clock text-orange-400 mr-1"></i>
-                            ${venta.hora_inicio || '--:--'} - ${venta.hora_fin || '--:--'}
+                            ${formatearHoraAmPm(venta.hora_inicio) || '--:--'} - ${formatearHoraAmPm(venta.hora_fin) || '--:--'}
                         </p>
                     ` : ''}
                     ${venta.notas ? `
