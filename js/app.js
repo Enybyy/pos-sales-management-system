@@ -48,8 +48,26 @@ async function inicializarApp() {
     // Cargar ventas existentes
     await cargarVentas();
 
+    // Actualizar lista de vendedores para autocompletado
+    actualizarListaVendedores();
+
     // Configurar eventos
     configurarEventos();
+}
+
+function actualizarListaVendedores() {
+    if (!ventasCache || ventasCache.length === 0) return;
+
+    // Obtener vendedores únicos, no vacíos, ordenados alfabéticamente
+    const vendedores = [...new Set(ventasCache
+        .map(v => v.vendedor ? v.vendedor.trim() : '') // Obtener nombres
+        .filter(nombre => nombre.length > 0) // Filtrar vacíos
+    )].sort();
+
+    const datalist = document.getElementById('lista-vendedores');
+    if (datalist) {
+        datalist.innerHTML = vendedores.map(v => `<option value="${v}">`).join('');
+    }
 }
 
 // ==========================================
@@ -160,6 +178,7 @@ async function guardarVenta(ventaData) {
         localStorage.setItem(DB_KEY, JSON.stringify(ventasCache));
 
         actualizarEstadisticas();
+        actualizarListaVendedores();
         renderizarVentas();
         mostrarToast('¡Venta registrada correctamente! 🎉', 'success');
 
@@ -188,6 +207,7 @@ async function actualizarVenta(id, ventaData) {
         localStorage.setItem(DB_KEY, JSON.stringify(ventasCache));
 
         actualizarEstadisticas();
+        actualizarListaVendedores();
         renderizarVentas();
         mostrarToast('¡Venta actualizada correctamente! ✅', 'success');
 
@@ -205,6 +225,7 @@ async function eliminarVenta(id) {
         localStorage.setItem(DB_KEY, JSON.stringify(ventasCache));
 
         actualizarEstadisticas();
+        actualizarListaVendedores();
         renderizarVentas();
         mostrarToast('Venta eliminada', 'success');
     } catch (error) {
