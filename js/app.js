@@ -7,7 +7,7 @@
 // ==========================================
 // CONFIGURACIÓN Y VARIABLES GLOBALES
 // ==========================================
-const API_BASE = 'tables/ventas_diarias';
+const DB_KEY = 'molleventas_db_v1';
 let ventasCache = [];
 let filtroActual = 'todos';
 
@@ -21,13 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
 async function inicializarApp() {
     // Mostrar fecha actual
     mostrarFechaActual();
-    
+
     // Establecer fecha de hoy en el formulario
     document.getElementById('fecha').valueAsDate = new Date();
-    
+
     // Cargar ventas existentes
     await cargarVentas();
-    
+
     // Configurar eventos
     configurarEventos();
 }
@@ -43,48 +43,62 @@ function mostrarFechaActual() {
 }
 
 function formatearFecha(fecha) {
-    const date = new Date(fecha);
+    const date = new Date(fecha + 'T12:00:00'); // Asegurar zona horaria correcta al visualizar
     const opciones = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
     return date.toLocaleDateString('es-ES', opciones);
 }
 
 function obtenerDiaSemana(fecha) {
-    const date = new Date(fecha);
+    const date = new Date(fecha + 'T12:00:00');
     const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     return dias[date.getDay()];
 }
 
 function esMismoDia(fecha1, fecha2) {
-    const d1 = new Date(fecha1);
+    // fecha1 string YYYY-MM-DD, fecha2 Date object
+    const d1 = new Date(fecha1 + 'T00:00:00');
     const d2 = new Date(fecha2);
-    return d1.toDateString() === d2.toDateString();
+    return d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate();
 }
 
 function esEstaSemana(fecha) {
     const hoy = new Date();
-    const fechaVenta = new Date(fecha);
-    const inicioSemana = new Date(hoy);
-    inicioSemana.setDate(hoy.getDate() - hoy.getDay());
-    inicioSemana.setHours(0, 0, 0, 0);
-    return fechaVenta >= inicioSemana;
+    const fechaVenta = new Date(fecha + 'T00:00:00');
+
+    // Obtener el lunes de esta semana
+    const primerDiaSemana = new Date(hoy);
+    const diaSemana = hoy.getDay() || 7; // Convertir domingo (0) a 7 para facilitar cálculo
+    primerDiaSemana.setDate(hoy.getDate() - diaSemana + 1);
+    primerDiaSemana.setHours(0, 0, 0, 0);
+
+    // Obtener el final de la semana
+    const ultimoDiaSemana = new Date(primerDiaSemana);
+    ultimoDiaSemana.setDate(primerDiaSemana.getDate() + 6);
+    ultimoDiaSemana.setHours(23, 59, 59, 999);
+
+    return fechaVenta >= primerDiaSemana && fechaVenta <= ultimoDiaSemana;
 }
 
 function esEsteMes(fecha) {
     const hoy = new Date();
-    const fechaVenta = new Date(fecha);
-    return fechaVenta.getMonth() === hoy.getMonth() && 
-           fechaVenta.getFullYear() === hoy.getFullYear();
+    const fechaVenta = new Date(fecha + 'T00:00:00');
+    return fechaVenta.getMonth() === hoy.getMonth() &&
+        fechaVenta.getFullYear() === hoy.getFullYear();
 }
 
 // ==========================================
-// API - OPERACIONES CRUD
+// ALMACENAMIENTO - LOCALSTORAGE
 // ==========================================
 async function cargarVentas() {
     try {
-        const response = await fetch(`${API_BASE}?limit=1000&sort=-fecha`);
-        const data = await response.json();
-        ventasCache = data.data || [];
-        
+        // Simular pequeño delay para UX
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const rawData = localStorage.getItem(DB_KEY);
+        ventasCache = rawData ? JSON.parse(rawData) : [];
+
         actualizarEstadisticas();
         renderizarVentas();
     } catch (error) {
@@ -95,21 +109,23 @@ async function cargarVentas() {
 
 async function guardarVenta(ventaData) {
     try {
-        const response = await fetch(API_BASE, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(ventaData)
-        });
-        
-        if (!response.ok) throw new Error('Error al guardar');
-        
-        const nuevaVenta = await response.json();
+        // Crear nueva venta con ID único
+        const nuevaVenta = {
+            id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+            ...ventaData,
+            createdAt: new Date().toISOString()
+        };
+
+        // Agregar al inicio del array
         ventasCache.unshift(nuevaVenta);
-        
+
+        // Guardar persistente
+        localStorage.setItem(DB_KEY, JSON.stringify(ventasCache));
+
         actualizarEstadisticas();
         renderizarVentas();
         mostrarToast('¡Venta registrada correctamente! 🎉', 'success');
-        
+
         return nuevaVenta;
     } catch (error) {
         console.error('Error guardando venta:', error);
@@ -120,26 +136,24 @@ async function guardarVenta(ventaData) {
 
 async function actualizarVenta(id, ventaData) {
     try {
-        const response = await fetch(`${API_BASE}/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(ventaData)
-        });
-        
-        if (!response.ok) throw new Error('Error al actualizar');
-        
-        const ventaActualizada = await response.json();
-        
-        // Actualizar cache
         const index = ventasCache.findIndex(v => v.id === id);
-        if (index !== -1) {
-            ventasCache[index] = ventaActualizada;
-        }
-        
+        if (index === -1) throw new Error('Venta no encontrada');
+
+        // Mantener propiedades originales como fecha creación
+        const ventaActualizada = {
+            ...ventasCache[index],
+            ...ventaData,
+            updatedAt: new Date().toISOString()
+        };
+
+        ventasCache[index] = ventaActualizada;
+
+        localStorage.setItem(DB_KEY, JSON.stringify(ventasCache));
+
         actualizarEstadisticas();
         renderizarVentas();
         mostrarToast('¡Venta actualizada correctamente! ✅', 'success');
-        
+
         return ventaActualizada;
     } catch (error) {
         console.error('Error actualizando venta:', error);
@@ -150,15 +164,9 @@ async function actualizarVenta(id, ventaData) {
 
 async function eliminarVenta(id) {
     try {
-        const response = await fetch(`${API_BASE}/${id}`, {
-            method: 'DELETE'
-        });
-        
-        if (!response.ok) throw new Error('Error al eliminar');
-        
-        // Eliminar del cache
         ventasCache = ventasCache.filter(v => v.id !== id);
-        
+        localStorage.setItem(DB_KEY, JSON.stringify(ventasCache));
+
         actualizarEstadisticas();
         renderizarVentas();
         mostrarToast('Venta eliminada', 'success');
@@ -174,20 +182,20 @@ async function eliminarVenta(id) {
 // ==========================================
 function actualizarEstadisticas() {
     const hoy = new Date();
-    
+
     // Ventas de hoy
     const ventasHoy = ventasCache
         .filter(v => esMismoDia(v.fecha, hoy))
         .reduce((sum, v) => sum + (parseFloat(v.monto) || 0), 0);
-    
+
     // Ventas del mes
     const ventasMes = ventasCache
         .filter(v => esEsteMes(v.fecha))
         .reduce((sum, v) => sum + (parseFloat(v.monto) || 0), 0);
-    
+
     // Total registros
     const totalRegistros = ventasCache.length;
-    
+
     // Actualizar UI con animación
     animarNumero('ventas-hoy', ventasHoy, 'S/ ');
     animarNumero('ventas-mes', ventasMes, 'S/ ');
@@ -201,7 +209,7 @@ function animarNumero(elementId, valor, prefijo = '') {
     const fps = 60;
     const incremento = valorFinal / (duracion / 1000 * fps);
     let valorActual = 0;
-    
+
     const intervalo = setInterval(() => {
         valorActual += incremento;
         if (valorActual >= valorFinal) {
@@ -217,19 +225,19 @@ function animarNumero(elementId, valor, prefijo = '') {
 // ==========================================
 function renderizarVentas() {
     const container = document.getElementById('lista-ventas');
-    
+
     // Filtrar según selección
     let ventasFiltradas = [...ventasCache];
-    
+
     if (filtroActual === 'semana') {
         ventasFiltradas = ventasFiltradas.filter(v => esEstaSemana(v.fecha));
     } else if (filtroActual === 'mes') {
         ventasFiltradas = ventasFiltradas.filter(v => esEsteMes(v.fecha));
     }
-    
+
     // Ordenar por fecha descendente
     ventasFiltradas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-    
+
     if (ventasFiltradas.length === 0) {
         container.innerHTML = `
             <div class="text-center py-12 text-gray-400">
@@ -240,7 +248,7 @@ function renderizarVentas() {
         `;
         return;
     }
-    
+
     container.innerHTML = ventasFiltradas.map((venta, index) => `
         <div class="venta-card rounded-xl p-4 relative" style="animation-delay: ${index * 0.05}s">
             <div class="flex items-start justify-between">
@@ -289,16 +297,16 @@ function renderizarVentas() {
 // ==========================================
 function filtrarVentas(filtro) {
     filtroActual = filtro;
-    
+
     // Actualizar botones
     document.querySelectorAll('.filtro-btn').forEach(btn => {
         btn.classList.remove('active', 'bg-amber-500', 'text-white');
         btn.classList.add('bg-gray-100', 'text-gray-600');
     });
-    
+
     event.target.classList.remove('bg-gray-100', 'text-gray-600');
     event.target.classList.add('active', 'bg-amber-500', 'text-white');
-    
+
     renderizarVentas();
 }
 
@@ -308,7 +316,7 @@ function filtrarVentas(filtro) {
 function abrirModalEditar(id) {
     const venta = ventasCache.find(v => v.id === id);
     if (!venta) return;
-    
+
     document.getElementById('editar-id').value = venta.id;
     document.getElementById('editar-fecha').value = venta.fecha ? venta.fecha.split('T')[0] : '';
     document.getElementById('editar-monto').value = venta.monto;
@@ -316,7 +324,7 @@ function abrirModalEditar(id) {
     document.getElementById('editar-hora-inicio').value = venta.hora_inicio || '';
     document.getElementById('editar-hora-fin').value = venta.hora_fin || '';
     document.getElementById('editar-notas').value = venta.notas || '';
-    
+
     const modal = document.getElementById('modal-editar');
     modal.classList.remove('hidden');
     setTimeout(() => modal.classList.add('show'), 10);
@@ -334,9 +342,9 @@ function cerrarModal() {
 function confirmarEliminar(id) {
     const venta = ventasCache.find(v => v.id === id);
     if (!venta) return;
-    
+
     const confirmacion = confirm(`¿Estás seguro de eliminar la venta de S/ ${parseFloat(venta.monto).toFixed(2)} del ${formatearFecha(venta.fecha)}?`);
-    
+
     if (confirmacion) {
         eliminarVenta(id);
     }
@@ -348,11 +356,11 @@ function confirmarEliminar(id) {
 function mostrarToast(mensaje, tipo = 'success') {
     const toast = document.getElementById('toast');
     const toastMensaje = document.getElementById('toast-mensaje');
-    
+
     toastMensaje.textContent = mensaje;
     toast.classList.remove('success', 'error');
     toast.classList.add(tipo, 'show');
-    
+
     setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
@@ -365,7 +373,7 @@ function configurarEventos() {
     // Formulario de nueva venta
     document.getElementById('form-venta').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const ventaData = {
             fecha: document.getElementById('fecha').value,
             monto: parseFloat(document.getElementById('monto').value),
@@ -374,7 +382,7 @@ function configurarEventos() {
             hora_fin: document.getElementById('hora-fin').value,
             notas: document.getElementById('notas').value.trim()
         };
-        
+
         try {
             await guardarVenta(ventaData);
             e.target.reset();
@@ -383,11 +391,11 @@ function configurarEventos() {
             // Error ya manejado en guardarVenta
         }
     });
-    
+
     // Formulario de edición
     document.getElementById('form-editar').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const id = document.getElementById('editar-id').value;
         const ventaData = {
             fecha: document.getElementById('editar-fecha').value,
@@ -397,7 +405,7 @@ function configurarEventos() {
             hora_fin: document.getElementById('editar-hora-fin').value,
             notas: document.getElementById('editar-notas').value.trim()
         };
-        
+
         try {
             await actualizarVenta(id, ventaData);
             cerrarModal();
@@ -405,14 +413,14 @@ function configurarEventos() {
             // Error ya manejado en actualizarVenta
         }
     });
-    
+
     // Cerrar modal al hacer clic fuera
     document.getElementById('modal-editar').addEventListener('click', (e) => {
         if (e.target.id === 'modal-editar') {
             cerrarModal();
         }
     });
-    
+
     // Cerrar modal con Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
