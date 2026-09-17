@@ -34,7 +34,33 @@ function obtenerTemporada(fechaStr) {
     return 'Primavera 🌸';
 }
 
+
+// Precarga de datos demo si el storage esta vacio para portfolio showcase
+function precargarDatosDemoSiEstaVacio() {
+    const raw = localStorage.getItem(DB_KEY);
+    if (!raw || JSON.parse(raw).length === 0) {
+        const hoyStr = new Date().toISOString().split('T')[0];
+        const ayer = new Date(); ayer.setDate(ayer.getDate() - 1);
+        const ayerStr = ayer.toISOString().split('T')[0];
+        const anteayer = new Date(); anteayer.setDate(anteayer.getDate() - 2);
+        const anteayerStr = anteayer.toISOString().split('T')[0];
+        const hace3 = new Date(); hace3.setDate(hace3.getDate() - 3);
+        const hace3Str = hace3.toISOString().split('T')[0];
+
+        const demoVentas = [
+            { id: 'demo-1', fecha: hoyStr, monto: 145.50, vendedor: 'Marta R.', hora_inicio: '18:00', hora_fin: '22:30', notas: 'Alta afluencia de pedidos con cremas', createdAt: new Date().toISOString() },
+            { id: 'demo-2', fecha: hoyStr, monto: 98.00, vendedor: 'Carlos M.', hora_inicio: '18:30', hora_fin: '21:30', notas: 'Turno tarde', createdAt: new Date().toISOString() },
+            { id: 'demo-3', fecha: ayerStr, monto: 230.00, vendedor: 'Marta R.', hora_inicio: '17:30', hora_fin: '23:00', notas: 'Venta de combos familiares y gaseosas', createdAt: new Date().toISOString() },
+            { id: 'demo-4', fecha: ayerStr, monto: 180.50, vendedor: 'Eliud RM', hora_inicio: '18:00', hora_fin: '22:45', notas: 'Día viernes pico de ventas', createdAt: new Date().toISOString() },
+            { id: 'demo-5', fecha: anteayerStr, monto: 165.00, vendedor: 'Carlos M.', hora_inicio: '18:00', hora_fin: '22:00', notas: 'Normal', createdAt: new Date().toISOString() },
+            { id: 'demo-6', fecha: hace3Str, monto: 195.00, vendedor: 'Marta R.', hora_inicio: '17:45', hora_fin: '22:30', notas: 'Buena rotación de mollejitas con yuca', createdAt: new Date().toISOString() }
+        ];
+        localStorage.setItem(DB_KEY, JSON.stringify(demoVentas));
+    }
+}
+
 async function inicializarApp() {
+    precargarDatosDemoSiEstaVacio();
     // Mostrar fecha actual
     mostrarFechaActual();
 
