@@ -1,16 +1,30 @@
 # 🍗 MolleVentas — Sistema Web POS & Analítica Comercial para Gastronomía y Retail
 > **Digitalización de ventas diarias, control de turnos y analítica en tiempo real para negocios gastronómicos y comercios.**
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<p align="center">
+  <a href="https://enybyy.github.io/pos-sales-management-system/" target="_blank">
+    <img src="https://img.shields.io/badge/▶️_PROBAR_DEMO_EN_VIVO-GitHub_Pages-22c55e?style=for-the-badge&logo=github&logoColor=white" alt="Demo en Vivo" />
+  </a>
+  <a href="https://www.linkedin.com/in/eliud-rm/" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-Eliud_RM-0284c7?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+  </a>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/screenshot-pos-main.png" alt="Vista Principal del Punto de Venta" width="48%" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
+  <img src="assets/screenshots/screenshot-pos-analytics.png" alt="Dashboard Analítico con Chart.js" width="48%" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
+</p>
+
 [![Frontend](https://img.shields.io/badge/Frontend-HTML5%20%7C%20TailwindCSS%20%7C%20ES6+-orange.svg)](#-stack-tecnológico)
 [![Analytics](https://img.shields.io/badge/Analytics-Chart.js-yellow.svg)](#-funcionalidades-principales)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-success.svg)](#)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
 ## 📌 El Desafío de Negocio
 
-Muchos negocios de comida rápida, puestos de venta y pequeños comercios minoristas operan con anotaciones en cuadernos o memorias de cálculo manuales al cierre de cada jornada. Esta práctica común genera serios problemas:
+Muchos negocios de comida rápida, puestos de venta y pequeños comercios minoristas operan con anotaciones en cuadernos o memorias de cálculo manuales al cierre de cada jornada:
 - **Descuadres de caja diarios** y falta de conciliación de turnos entre diferentes vendedores.
 - **Cero visibilidad analítica** sobre qué días de la semana y qué franjas horarias generan el mayor retorno real.
 - **Pérdida de insumos** por compras mal calculadas al desconocer la velocidad real de rotación de productos.
@@ -22,10 +36,12 @@ Muchos negocios de comida rápida, puestos de venta y pequeños comercios minori
 
 **MolleVentas** fue diseñado desde cero como una **solución de punto de venta (POS) ligera, responsive y sin costes de suscripción**, operable directamente desde cualquier smartphone o tablet en el mostrador del negocio.
 
-Combina un módulo ultra rápido de cobro y registro diario con un **dashboard ejecutivo de Business Intelligence integrado**, permitiendo:
+Combina un módulo ultra rápido de cobro y registro diario con un **dashboard ejecutivo de Business Intelligence integrado**:
 1. Registrar ventas al instante con fecha, vendedor, turno y notas de operación.
 2. Supervisar métricas financieras consolidadas (ventas del día, acumulado mensual, ticket promedio).
 3. Analizar mediante gráficos interactivos (`Chart.js`) la productividad por hora, la distribución por días de la semana y la velocidad de venta.
+
+👉 **[Prueba la Demo Interactiva en Vivo aquí](https://enybyy.github.io/pos-sales-management-system/)**
 
 ---
 
@@ -42,65 +58,30 @@ Combina un módulo ultra rápido de cobro y registro diario con un **dashboard e
 
 ## ✨ Funcionalidades Principales
 
-- **Registro de Ventas en Punto de Venta**: Ingreso ágil de monto en soles (S/), selección de fecha, asignación de vendedor, horarios de turno y observaciones de caja.
-- **Historial Interactivo con Filtros Temporales**: Visualización cronológica con filtros rápidos por: *Todos*, *Esta Semana*, *Este Mes*.
-- **Gestión Completa de Registros (CRUD)**: Edición rápida de registros existentes o eliminación segura con confirmación.
+- **Registro Rápido de Ventas**: Ingreso ágil de monto en soles (S/), fecha, vendedor, horarios de turno y observaciones de caja.
+- **Historial Interactivo con Filtros**: Segmentación por: *Todos*, *Esta Semana*, *Este Mes*.
+- **Gestión Completa (CRUD)**: Edición rápida o eliminación con confirmación.
 - **Dashboard Analítico Avanzado**:
-  - **Distribución de Ventas por Día de la Semana**: Gráfico de barras comparativo para identificar los días de mayor rentabilidad.
-  - **Análisis de Franjas Horarias (Horas Pico)**: Mapa de impacto para optimizar la preparación de pedidos en los momentos de mayor demanda.
-  - **Velocidad de Venta y Duración de Turnos**: Métricas para medir la eficiencia del servicio.
-- **Diseño 100% Responsive & Touch-Friendly**: Adaptado para trabajar cómodamente en pantallas móviles, tablets o laptops de caja.
+  - **Distribución por Día de la Semana**: Gráfico de barras comparativo para identificar días de mayor rentabilidad.
+  - **Horas Pico**: Mapa de impacto para optimizar preparación y personal en horas de alta demanda.
+  - **Velocidad de Venta y Turnos**: Métricas de eficiencia operativa.
+- **100% Responsive & Touch-Friendly**: Adaptado para trabajar cómodamente en teléfonos móviles, tablets o pantallas táctiles de mostrador.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
 - **HTML5 Semántico**: Estructura limpia y accesible.
-- **Tailwind CSS & Custom CSS**: Interfaz moderna, cálida, con feedback visual y animaciones sutiles optimizadas para pantallas táctiles.
-- **JavaScript Moderno (ES6+)**: Lógica reactiva en el cliente, validaciones y manipulación eficiente del DOM.
-- **Chart.js**: Renderizado dinámico de gráficos estadísticos y métricas de rendimiento.
-- **Font Awesome & Google Fonts (Poppins)**: Iconografía clara y tipografía moderna para legibilidad en mostrador.
-
----
-
-## 🗂️ Estructura del Proyecto
-
-```text
-├── index.html          # Punto de entrada de la aplicación POS y modales
-├── css/
-│   └── style.css       # Estilos personalizados y utilidades de diseño
-├── js/
-│   ├── app.js          # Lógica de la aplicación, control de turnos y eventos
-│   └── analytics.js    # Motor de cálculo estadístico, KPIs y gráficos Chart.js
-└── README.md           # Documentación del proyecto
-```
-
----
-
-## 🚀 Instalación y Uso Rápido
-
-1. **Clonar el repositorio:**
-   ```bash
-   git clone https://github.com/Enybyy/pos-sales-management-system.git
-   cd pos-sales-management-system
-   ```
-
-2. **Ejecutar localmente:**
-   - Puedes abrir `index.html` directamente en tu navegador web favorito (Chrome, Edge, Safari, Firefox).
-   - O iniciar un servidor estático local:
-     ```bash
-     # Usando Python
-     python -m http.server 8000
-     # O usando Node.js (npx)
-     npx serve .
-     ```
+- **Tailwind CSS & Custom CSS**: Interfaz moderna, rápida y adaptable.
+- **JavaScript ES6+**: Lógica reactiva en cliente y persistencia local (`localStorage`).
+- **Chart.js**: Renderizado dinámico de gráficos estadísticos.
 
 ---
 
 ## 📬 ¿Necesitas una solución similar para tu negocio?
 
-Soy desarrollador freelance especializado en crear **soluciones web a medida, sistemas de gestión interna (POS/ERP), automatizaciones y dashboards analíticos**. Si buscas digitalizar las operaciones de tu negocio, optimizar tiempos y tomar el control total de tus datos:
+Desarrollo **sistemas web a medida, soluciones POS personalizadas, paneles de administración y dashboards analíticos**.
 
+- **LinkedIn**: [Eliud RM](https://www.linkedin.com/in/eliud-rm/)
 - **GitHub**: [@Enybyy](https://github.com/Enybyy)
-- **Perfil Profesional**: Eliud RM — Data Science & Software Solutions
-- *Disponible para proyectos freelance y consultoría tecnológica personalizada.*
+- *Disponible para proyectos freelance y consultoría tecnológica.*
