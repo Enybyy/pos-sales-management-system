@@ -1,3 +1,29 @@
+## 🇬🇧 English Summary
+
+**Point-of-sale system with a built-in real-time business intelligence dashboard.**
+
+**The problem:** small retail and food businesses close each day with notebooks and manual spreadsheets — cash mismatches, no shift accountability, and zero visibility into which days and hours actually make money.
+
+**The solution:** a lightweight, responsive POS with an executive analytics dashboard. No subscription, runs from any phone or tablet at the counter.
+
+**Measured impact:**
+
+| Metric | Before | After |
+|---|---|---|
+| Daily cash reconciliation | 30–45 min | One click (~20 h saved/month) |
+| Seller & shift traceability | None | 100% |
+| Stock purchasing | Intuition | Driven by real peak-day data |
+| Software cost | $30–70/month | No subscription |
+
+**Stack:** JavaScript (ES6+) · Tailwind CSS · Chart.js
+
+🔗 **[Live demo](https://enybyy.github.io/pos-sales-management-system/)**
+
+---
+
+<details>
+<summary>📖 <b>Documentación completa en español</b> (click para expandir)</summary>
+
 # 🍗 MolleVentas — Sistema Web POS & Analítica Comercial para Gastronomía y Retail
 > **Digitalización de ventas diarias, control de turnos y analítica en tiempo real para negocios gastronómicos y comercios.**
 
@@ -85,3 +111,6 @@ Desarrollo **sistemas web a medida, soluciones POS personalizadas, paneles de ad
 - **LinkedIn**: [Eliud RM](https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/)
 - **GitHub**: [@Enybyy](https://github.com/Enybyy)
 - *Disponible para proyectos freelance y consultoría tecnológica.*
+
+
+</details>
