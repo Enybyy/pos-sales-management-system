@@ -13,7 +13,6 @@
 | Daily cash reconciliation | 30–45 min | One click (~20 h saved/month) |
 | Seller & shift traceability | None | 100% |
 | Stock purchasing | Intuition | Driven by real peak-day data |
-| Software cost | $30–70/month | No subscription |
 
 **Stack:** JavaScript (ES6+) · Tailwind CSS · Chart.js
 
