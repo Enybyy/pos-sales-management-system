@@ -2,148 +2,141 @@
 
 # MolleVentas
 
-Registro de ventas por turno en soles, con historial, análisis descriptivo y copias de los datos en JSON.
+Shift sales records in Peruvian soles, with history, descriptive analysis and JSON backups.
 
-<a href="https://enybyy.github.io/pos-sales-management-system/"><img src="docs/media/demo.svg" width="360" alt="Abrir demo"></a>
+<a href="https://enybyy.github.io/pos-sales-management-system/"><img src="docs/media/demo.svg" width="360" alt="Open demo"></a>
 
-<p><a href="https://github.com/Enybyy"><img src="docs/media/github.svg" width="112" alt="GitHub de Eliud Rojas Mendoza"></a>
-<a href="https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/"><img src="docs/media/linkedin.svg" width="112" alt="LinkedIn de Eliud Rojas Mendoza"></a>
-<a href="https://www.upwork.com/freelancers/~01471ca462b236e8e5"><img src="docs/media/upwork.svg" width="112" alt="Upwork de Eliud Rojas Mendoza"></a></p>
+<p><a href="https://github.com/Enybyy"><img src="docs/media/github.svg" width="112" alt="Eliud Rojas Mendoza on GitHub"></a>
+<a href="https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/"><img src="docs/media/linkedin.svg" width="112" alt="Eliud Rojas Mendoza on LinkedIn"></a>
+<a href="https://www.upwork.com/freelancers/~01471ca462b236e8e5"><img src="docs/media/upwork.svg" width="112" alt="Eliud Rojas Mendoza on Upwork"></a></p>
 
-[![MolleVentas en uso](assets/screenshots/upwork-molleventas-4x3.png)](https://enybyy.github.io/pos-sales-management-system/)
+[![MolleVentas in use](assets/screenshots/upwork-molleventas-4x3.png)](https://enybyy.github.io/pos-sales-management-system/)
 
-*Captura real del prototipo con ventas ficticias. Cada registro representa el total de un turno.*
+*Actual prototype screenshot with fictional sales. Each record represents the total for one shift.*
 
-[Acerca del proyecto](#acerca-del-proyecto) · [Capturas](#capturas) · [Recorrido](#en-el-día-a-día) · [Tecnología](#cómo-está-construido) · [Uso local](#uso-local)
+[About](#about-the-project) · [Workflow](#everyday-workflow) · [Technology](#built-with) · [Run locally](#local-use)
 
 </div>
 
-## Acerca del proyecto
 
-En un puesto de comida, el cierre de cada turno deja un monto, un vendedor y, a veces, un horario o una observación. MolleVentas conserva esos datos en un historial editable para que la consulta del día, la semana o el mes parta de los mismos registros.
+## About the project
 
-El análisis permite recorrer los ingresos y la duración de los turnos sin preparar una segunda hoja para cada comparación. Las copias JSON conservan la información del navegador y permiten recuperarla. Cada registro representa el total vendido en un turno; la aplicación se concentra en ese control, sin inventario ni emisión de comprobantes.
+At a food stall, closing a shift leaves a sales total, a seller and sometimes working hours or a note. MolleVentas keeps those details in an editable history, so daily, weekly and monthly views all start from the same records.
 
-## En el día a día
+Analysis lets users review revenue and shift duration without preparing another spreadsheet for each comparison. JSON backups preserve browser data and allow it to be restored. Each entry represents a shift total; the app concentrates on this record rather than inventory or receipt issuance.
 
-| Dentro del proyecto | Detalle |
+## Everyday workflow
+
+| Inside the project | Detail |
 | --- | --- |
-| Registro por turno | Fecha, monto y vendedor, con horario y notas opcionales. |
-| Historial editable | Consulta por período, edición y eliminación de registros. |
-| Análisis descriptivo | Comparación de días, duración de turnos e ingresos por hora. |
-| Cálculo de importes | Sumas en céntimos y fechas de negocio en America/Lima. |
-| Copias de trabajo | Exportación JSON y restauración validada desde el navegador. |
+| Shift record | Date, amount and seller, with optional hours and notes. |
+| Editable history | Period filters, editing and record deletion. |
+| Descriptive analysis | Compare days, shift duration and revenue per hour. |
+| Amount calculations | Integer-cent totals and business dates in America/Lima. |
+| Backups | JSON export and validated restoration in the browser. |
 
-## Capturas
+## Screenshots
 
-### Análisis de los turnos registrados
+### Analysis of recorded shifts
 
-![Análisis de los turnos registrados](assets/screenshots/screenshot-pos-analytics.png)
+![Analysis of recorded shifts](assets/screenshots/screenshot-pos-analytics.png)
 
-## Explorar la demo
+## Explore the demo
 
-1. El primer acceso carga seis turnos ficticios con fechas cercanas al día actual de Perú.
-2. Registra fecha, monto y vendedor. El horario y las notas son opcionales; si añades horario, completa inicio y fin.
-3. Usa **Todos**, **Semana** o **Mes** para filtrar el historial; edita o elimina un registro con sus botones.
-4. Abre **Análisis** para comparar días, ingresos por hora y duración de los turnos.
-5. **Backup** descarga todas las ventas en JSON. **Restaurar copia** valida un archivo y pide confirmar antes de reemplazar los datos.
-6. **Recargar ejemplo** reemplaza tus cambios por seis turnos ficticios, previa confirmación. Descarga una copia antes si quieres conservarlos.
+The interface uses Spanish labels:
 
-Un registro representa el **total vendido en un turno**, no una línea de producto ni un comprobante. Un turno de 23:00 a 01:30 dura 2 h 30 min y se asigna a su fecha de inicio.
+1. First use loads six fictional shifts with dates near the current day in Peru.
+2. Enter a date, amount and seller. Hours and notes are optional; if adding hours, provide both start and end.
+3. Use **Todos** (All), **Semana** (Week) or **Mes** (Month) to filter history. Edit or delete records with their controls.
+4. Open **Análisis** (Analysis) to compare days, revenue per hour and shift duration.
+5. **Backup** downloads all sales as JSON. **Restaurar copia** (Restore backup) validates a file and requests confirmation before replacing data.
+6. **Recargar ejemplo** (Reload example) replaces changes with six fictional shifts after confirmation. Download a backup first to retain your records.
 
-## Qué incluye
+Each record is the **total sold during one shift**, not a product line or receipt. A shift from 23:00 to 01:30 lasts 2 h 30 min and belongs to its starting date.
 
-- Crear, editar y eliminar ventas, con persistencia en `localStorage`.
-- Montos positivos con hasta dos decimales y sumas calculadas en céntimos.
-- Fecha de negocio en `America/Lima`; semana de lunes a domingo.
-- Ingreso por hora = ingresos de turnos con horario / horas totales de esos turnos.
-- Promedios por día calculados por registro. Las observaciones describen la muestra, sin atribuir causalidad, rentabilidad ni predicciones.
-- Copias JSON, restauración validada y preservación del archivo original si el almacenamiento contiene datos inválidos.
-- Diseño original ámbar/Poppins conservado; controles accesibles, navegación por teclado y vista móvil desde 360 px.
+## What is included
 
-## Alcance del prototipo
+- Create, edit and delete sales, persisted in `localStorage`.
+- Positive amounts with up to two decimal places and totals calculated in cents.
+- Business dates in `America/Lima`, with Monday–Sunday weeks.
+- Revenue per hour = revenue from timed shifts / total hours of those shifts.
+- Daily averages calculated per record. Observations describe the sample without claiming causality, profit or predictions.
+- JSON backups, validated restoration and preservation of the original stored content when invalid data is detected.
+- The original amber/Poppins design, accessible controls and keyboard navigation.
 
-La demo funciona en un navegador y conserva los cambios en ese mismo origen/dispositivo. No tiene cuentas, servidor, sincronización entre equipos, inventario, emisión de comprobantes, procesamiento de pagos ni conciliación bancaria. Borrar los datos del navegador elimina el registro local; descarga copias periódicas si lo usas para explorar información propia.
+## Prototype scope
 
-Las cifras de la demo son ficticias. Este repositorio no presenta ahorros de tiempo o resultados comerciales medidos. El análisis es JavaScript determinista y Chart.js; no usa IA.
+The demo runs in a browser and retains changes on that origin and device. It has no accounts, backend, cross-device synchronization, inventory, receipt issuance, payment processing or bank reconciliation. Clearing browser data removes local records; export backups when exploring your own information.
 
-## Cómo está construido
+Demo figures are fictional and do not represent measured time savings or business results. Analysis uses deterministic JavaScript calculations and Chart.js.
 
-| Área | Tecnología |
+## Built with
+
+| Area | Technology |
 | --- | --- |
-| Interfaz | HTML, CSS, Tailwind y JavaScript |
-| Gráficos | Chart.js |
-| Persistencia | localStorage y copias JSON |
-| Recursos | Fuentes e iconos incluidos localmente |
-| Verificación | Node.js y Playwright |
+| Interface | HTML, CSS, Tailwind and JavaScript |
+| Charts | Chart.js |
+| Persistence | localStorage and JSON backups |
+| Assets | Locally bundled fonts and icons |
+| Verification | Node.js and Playwright |
 
-## Uso local
+## Local use
 
 <details>
-<summary><strong>Ejecutar en tu equipo</strong></summary>
+<summary><strong>Run on your computer</strong></summary>
 
-No necesita backend ni instalación de paquetes para funcionar. Desde la carpeta del proyecto:
+No backend or package installation is needed to run the application. From the project folder:
 
 ```bash
 python -m http.server 5084 --bind 127.0.0.1
 ```
 
-Abre `http://127.0.0.1:5084`. También se puede publicar la carpeta en GitHub Pages. Estilos, gráficos, iconos y fuentes están incluidos; la aplicación no hace solicitudes a servicios externos.
+Open `http://127.0.0.1:5084`. The folder can also be published on GitHub Pages. Styles, charts, icons and fonts are bundled locally; the application does not request external services.
 
 </details>
 
 <details>
-<summary><strong>Verificar el código</strong></summary>
+<summary><strong>Code verification</strong></summary>
 
-Las reglas de negocio se prueban sin instalar dependencias, con Node.js 18 o posterior:
+Business-rule tests require Node.js 18+ without dependency installation:
 
 ```bash
 node --test tests/core.test.cjs
 ```
 
-Para repetir las 29 comprobaciones de navegador y generar las capturas reales:
+To repeat the 29 browser checks and capture the application:
 
 ```bash
 npm install
 npx playwright install chromium
-# Mantén el servidor de Python ejecutándose en otra terminal.
+# Keep the Python server running in another terminal.
 npm run test:browser
 ```
 
-La prueba de navegador usa un perfil temporal aislado y genera datos ficticios; no modifica el almacenamiento de tu navegador habitual. [Resultados y cobertura](docs/verification.md).
+The browser test uses an isolated temporary profile and fictional records, leaving your usual browser storage untouched. [Results and coverage](docs/verification.md).
 
 </details>
 
 <details>
-<summary><strong>Archivos</strong></summary>
+<summary><strong>Files and portfolio assets</strong></summary>
 
-| Ruta | Contenido |
-|---|---|
-| `index.html`, `css/style.css` | Interfaz y estilos propios |
-| `js/core.js` | Validación, fechas, céntimos y datos de ejemplo |
-| `js/app.js` | Formularios, almacenamiento, historial y copias |
-| `js/analytics.js` | Métricas y gráficos |
-| `tests/` | Reglas y recorrido de navegador |
-| `assets/screenshots/` | Capturas auténticas para GitHub y Upwork |
-| `assets/vendor/`, `assets/webfonts/` | Recursos locales y licencias de terceros |
+| Path | Content |
+| --- | --- |
+| `index.html`, `css/style.css` | Interface and custom styles |
+| `js/core.js` | Validation, dates, cents and examples |
+| `js/app.js` | Forms, storage, history and backups |
+| `js/analytics.js` | Metrics and charts |
+| `tests/` | Rules and browser workflow |
+| `assets/screenshots/` | Authentic GitHub and Upwork screenshots |
+| `assets/vendor/`, `assets/webfonts/` | Local assets and third-party licenses |
 
-</details>
+- `assets/screenshots/upwork-molleventas-4x3.png`: 1440 × 1080, 4:3 view for Upwork.
+- `assets/screenshots/screenshot-pos-main.png`: desktop form and history.
+- `assets/screenshots/screenshot-pos-analytics.png`: analysis with actual prototype charts.
 
-<details>
-<summary><strong>Imágenes para portafolio</strong></summary>
+All images were captured from the running application with fictional records.
 
-- `assets/screenshots/upwork-molleventas-4x3.png`: vista de 1440 × 1080, proporción 4:3, lista para usar en Upwork.
-- `assets/screenshots/screenshot-pos-main.png`: formulario e historial en escritorio.
-- `assets/screenshots/screenshot-pos-analytics.png`: análisis con gráficos reales del prototipo.
-
-Todas fueron capturadas de la aplicación funcionando con registros ficticios. No son imágenes generadas ni pruebas de ventas reales.
-
-</details>
-
-<details>
-<summary><strong>Recursos visuales</strong></summary>
-
-Tailwind CSS 3.4.17 (CSS de utilidades generado), Chart.js 4.4.9, Font Awesome Free 6.4.0 y Poppins se incluyen localmente. Sus licencias se conservan en `assets/vendor/`. [Criterio de presentación](docs/design.md).
+Tailwind CSS 3.4.17, Chart.js 4.4.9, Font Awesome Free 6.4.0 and Poppins are included locally, with licenses in `assets/vendor/`. [Presentation notes](docs/design.md).
 
 </details>
 
@@ -153,8 +146,8 @@ Tailwind CSS 3.4.17 (CSS de utilidades generado), Chart.js 4.4.9, Font Awesome F
 
 **Eliud Rojas Mendoza · Enybyy**
 
-<p><a href="https://github.com/Enybyy"><img src="docs/media/github.svg" width="112" alt="GitHub de Eliud Rojas Mendoza"></a>
-<a href="https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/"><img src="docs/media/linkedin.svg" width="112" alt="LinkedIn de Eliud Rojas Mendoza"></a>
-<a href="https://www.upwork.com/freelancers/~01471ca462b236e8e5"><img src="docs/media/upwork.svg" width="112" alt="Upwork de Eliud Rojas Mendoza"></a></p>
+<p><a href="https://github.com/Enybyy"><img src="docs/media/github.svg" width="112" alt="Eliud Rojas Mendoza on GitHub"></a>
+<a href="https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/"><img src="docs/media/linkedin.svg" width="112" alt="Eliud Rojas Mendoza on LinkedIn"></a>
+<a href="https://www.upwork.com/freelancers/~01471ca462b236e8e5"><img src="docs/media/upwork.svg" width="112" alt="Eliud Rojas Mendoza on Upwork"></a></p>
 
 </div>
