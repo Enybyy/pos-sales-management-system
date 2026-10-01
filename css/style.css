@@ -77,10 +77,7 @@
 
 /* Efecto para el monto en las tarjetas */
 .venta-monto {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #047857;
 }
 
 /* Botones de filtro */
@@ -89,7 +86,7 @@
 }
 
 .filtro-btn.active {
-    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+    background: linear-gradient(135deg, #b45309 0%, #c2410c 100%);
     color: white;
     transform: scale(1.05);
     box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
@@ -112,11 +109,11 @@ input:focus, textarea:focus, select:focus {
 }
 
 #toast.error {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    background: #b91c1c;
 }
 
 #toast.success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: #047857;
 }
 
 /* Modal */
@@ -185,11 +182,11 @@ button[type="submit"]:active {
         padding-left: 1rem;
         padding-right: 1rem;
     }
-    
+
     header h1 {
         font-size: 1.25rem;
     }
-    
+
     .venta-card {
         padding: 0.75rem;
     }
@@ -202,6 +199,7 @@ header {
 }
 
 header::before {
+    pointer-events: none;
     content: '';
     position: absolute;
     top: -50%;
@@ -235,7 +233,7 @@ header::before {
 
 /* Badge de día */
 .dia-badge {
-    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+    background: #4f46e5;
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
@@ -254,4 +252,34 @@ header::before {
     top: 50%;
     transform: translateY(-50%);
     box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+}
+
+/* Preserve the original food-stall palette; controls and copy make demo scope explicit. */
+.demo-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 24px; background: #fffbeb; color: #78350f; font-size: 12px; border-bottom: 1px solid #fcd34d; }
+.demo-banner a { font-weight: 600; text-decoration: underline; }
+.backup-tools { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; color: #57534e; font-size: 12px; }
+.backup-tools div { display: flex; flex-wrap: wrap; gap: 8px; }
+.backup-tools button { border: 1px solid #d6d3d1; border-radius: 8px; padding: 8px 12px; background: white; color: #78350f; font-weight: 500; }
+.backup-tools button:hover { background: #fef3c7; }
+header.bg-gradient-to-r, button[type="submit"] { background: linear-gradient(90deg, #b45309, #c2410c); }
+[onclick="exportarDatos()"] { background: #047857; }
+#modal-dashboard .text-gray-500 { color: #9ca3af; }
+.storage-alert { margin-bottom: 24px; border: 1px solid #ef4444; border-radius: 8px; background: #fff1f2; color: #9f1239; padding: 16px; }
+button:focus-visible, a:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+.venta-card p { overflow-wrap: anywhere; }
+.venta-card:hover { transform: none; }
+.bg-white, .venta-card { animation: none; }
+header::before { animation: none; }
+#modal-editar { overflow-y: auto; }
+#modal-editar .modal-content { max-height: calc(100dvh - 32px); overflow-y: auto; }
+#toast { max-width: calc(100vw - 32px); pointer-events: none; }
+@media (max-width: 600px) {
+    .demo-banner { padding: 10px 16px; }
+    #modal-dashboard h2 { font-size: 22px; }
+    #modal-dashboard .min-h-screen { padding-top: 20px; }
+    .backup-tools div { width: 100%; }
+    #form-venta > .grid:first-child { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

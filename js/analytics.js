@@ -7,11 +7,13 @@
 let chartDias = null;
 let chartHoraImpacto = null;
 let chartDuracion = null;
+let dashboardFocus;
 
 // ==========================================
 // GESTIÓN DEL MODAL
 // ==========================================
 function abrirDashboard() {
+    dashboardFocus = document.activeElement;
     const modal = document.getElementById('modal-dashboard');
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden'; // Evitar scroll del body
@@ -19,12 +21,14 @@ function abrirDashboard() {
     // Calcular y renderizar al abrir
     const ventas = window.obtenerVentasGlobal ? window.obtenerVentasGlobal() : [];
     actualizarDashboard(ventas);
+    modal.querySelector('button').focus();
 }
 
 function cerrarDashboard() {
     const modal = document.getElementById('modal-dashboard');
     modal.classList.add('hidden');
     document.body.style.overflow = '';
+    if (dashboardFocus && dashboardFocus.isConnected) dashboardFocus.focus();
 }
 
 // Cerrar con Escape
@@ -45,7 +49,8 @@ function actualizarDashboard(ventas) {
 
     const metricas = calcularMetricasAvanzadas(ventas);
     actualizarKPIs(metricas);
-    generarGraficos(metricas, ventas);
+    if (typeof Chart === 'function') generarGraficos(metricas, ventas);
+    else document.getElementById('insights-container').textContent = 'Los gráficos no pudieron cargarse. Las métricas siguen disponibles.';
     generarInsights(metricas, ventas);
 }
 
@@ -66,8 +71,7 @@ function calcularMetricasAvanzadas(ventas) {
     ventas.forEach(v => {
         // 1. Análisis por Día
         if (v.fecha) {
-            const date = new Date(v.fecha + 'T12:00:00');
-            const diaNombre = diasSemana[date.getDay()];
+            const diaNombre = diasSemana[MolleCore.weekday(v.fecha)];
             const monto = parseFloat(v.monto) || 0;
 
             if (datosPorDia[diaNombre]) {
@@ -120,7 +124,8 @@ function calcularMetricasAvanzadas(ventas) {
         datosPorDia,
         mejorDia,
         datosHorarios,
-        velocidadPromedio: contadorVelocidad > 0 ? sumaVelocidad / contadorVelocidad : 0,
+        // Aggregate revenue per hour: a short shift must not weigh as much as a long one.
+        velocidadPromedio: sumaDuracion > 0 ? datosHorarios.reduce((sum, record) => sum + Math.round(record.y * 100), 0) / 100 / sumaDuracion : 0,
         duracionPromedio: contadorDuracion > 0 ? sumaDuracion / contadorDuracion : 0
     };
 }
@@ -132,8 +137,9 @@ function parsearHoraDecimal(horaStr) {
 }
 
 function formatearHoraDecimal(decimal) {
-    const horas = Math.floor(decimal);
-    const minutos = Math.round((decimal - horas) * 60);
+    const totalMinutos = Math.round(decimal * 60) % 1440;
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
     return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
 }
 
@@ -150,21 +156,23 @@ function actualizarKPIs(metricas) {
         elMejorDiaDesc.textContent = `Promedio: S/ ${metricas.mejorDia.promedio.toFixed(2)}`;
     } else {
         elMejorDia.textContent = "--";
+        elMejorDiaDesc.textContent = 'Sin registros';
     }
 
     // Velocidad Promedio
     document.getElementById('kpi-velocidad').textContent = `S/ ${metricas.velocidadPromedio.toFixed(2)} / h`;
 
     // Duración Promedio
-    const durHoras = Math.floor(metricas.duracionPromedio);
-    const durMins = Math.round((metricas.duracionPromedio - durHoras) * 60);
+    const durTotal = Math.round(metricas.duracionPromedio * 60);
+    const durHoras = Math.floor(durTotal / 60);
+    const durMins = durTotal % 60;
     document.getElementById('kpi-duracion').textContent = `${durHoras}h ${durMins}m`;
 
-    // Hora Ideal (Calcular basado en el top 25% de ventas)
-    // Filtramos las ventas que están por encima del promedio
+    document.getElementById('kpi-hora-ideal').textContent = '--:--';
+    // Start time of the observed shift with the highest total revenue. Descriptive, not a prediction.
     if (metricas.datosHorarios.length > 0) {
         const ventasOrdenadas = [...metricas.datosHorarios].sort((a, b) => b.y - a.y);
-        const topVentas = ventasOrdenadas.slice(0, Math.ceil(ventasOrdenadas.length * 0.3)); // Top 30%
+        const topVentas = ventasOrdenadas.slice(0, 1);
 
         if (topVentas.length > 0) {
             const promHoraInicio = topVentas.reduce((acc, curr) => acc + curr.x, 0) / topVentas.length;
@@ -177,6 +185,7 @@ function actualizarKPIs(metricas) {
 
 function generarGraficos(metricas, ventas) {
     // Configuración común
+    Chart.defaults.animation = false;
     Chart.defaults.color = '#9ca3af';
     Chart.defaults.font.family = "'Poppins', sans-serif";
 
@@ -193,7 +202,7 @@ function generarGraficos(metricas, ventas) {
             labels: metricas.diasSemana.map(d => d.substring(0, 3)), // Lun, Mar...
             datasets: [
                 {
-                    label: 'Venta Promedio',
+                    label: 'Promedio por turno',
                     data: dataPromedios,
                     backgroundColor: 'rgba(251, 191, 36, 0.7)', // Amber
                     borderColor: 'rgba(251, 191, 36, 1)',
@@ -247,7 +256,7 @@ function generarGraficos(metricas, ventas) {
         type: 'scatter',
         data: {
             datasets: [{
-                label: 'Ventas Individuales',
+                label: 'Totales por turno',
                 data: scatterData,
                 backgroundColor: scatterData.map(d => {
                     // Colorear verde si es venta alta (> promedio aprox 150), sino amarillo/rojo
@@ -265,7 +274,7 @@ function generarGraficos(metricas, ventas) {
                     callbacks: {
                         label: (ctx) => {
                             const hora = formatearHoraDecimal(ctx.raw.x);
-                            return `Salida: ${hora}h - Venta: S/ ${ctx.raw.y}`;
+                            return `Inicio: ${hora}h - Venta: S/ ${ctx.raw.y}`;
                         }
                     }
                 }
@@ -274,8 +283,8 @@ function generarGraficos(metricas, ventas) {
                 x: {
                     type: 'linear',
                     position: 'bottom',
-                    title: { display: true, text: 'Hora de Salida (24h)' },
-                    min: 6, max: 22, // Asumo rango operativo de 6am a 10pm
+                    title: { display: true, text: 'Hora de inicio (24h)' },
+                    min: 0, max: 24,
                     ticks: { callback: val => `${val}h` },
                     grid: { color: 'rgba(255, 255, 255, 0.05)' }
                 },
@@ -353,15 +362,15 @@ function generarInsights(metricas, ventas) {
         const promTemprano = salidasTempranas.reduce((sum, d) => sum + d.y, 0) / (salidasTempranas.length || 1);
         const promTarde = salidasTardias.reduce((sum, d) => sum + d.y, 0) / (salidasTardias.length || 1);
 
-        if (promTemprano > promTarde * 1.1) {
+        if (salidasTempranas.length && salidasTardias.length && promTemprano > promTarde * 1.1) {
             insights.push({
                 icon: 'fa-sun text-yellow-400',
-                text: 'Trend detectado: Salir <strong>antes de las 2:00 PM</strong> genera un 10%+ más de ventas en promedio.'
+                text: 'Los turnos iniciados <strong>antes de las 2:00 PM</strong> tienen un promedio observado mayor. Esta muestra no demuestra causalidad.'
             });
-        } else if (promTarde > promTemprano * 1.1) {
+        } else if (salidasTempranas.length && salidasTardias.length && promTarde > promTemprano * 1.1) {
             insights.push({
                 icon: 'fa-moon text-blue-400',
-                text: 'Interesante: Las salidas por la <strong>tarde (después de las 2 PM)</strong> parecen ser más rentables.'
+                text: 'Los turnos iniciados <strong>desde las 2:00 PM</strong> tienen un promedio observado mayor. Se comparan ingresos, sin descontar costos.'
             });
         }
     }
@@ -392,7 +401,12 @@ function generarInsights(metricas, ventas) {
 }
 
 function mostrarEstadoVacio() {
-    // Si no hay datos, mostrar algo visualmente agradable en el dashboard
+    [chartDias, chartHoraImpacto, chartDuracion].forEach(chart => { if (chart) chart.destroy(); });
+    chartDias = chartHoraImpacto = chartDuracion = null;
     document.getElementById('kpi-mejor-dia').textContent = '--';
-    // Limpiar gráficos o mostrar placeholder
+    document.getElementById('kpi-mejor-dia-desc').textContent = 'Sin registros';
+    document.getElementById('kpi-hora-ideal').textContent = '--:--';
+    document.getElementById('kpi-velocidad').textContent = 'S/ 0.00 / h';
+    document.getElementById('kpi-duracion').textContent = '0h 0m';
+    document.getElementById('insights-container').textContent = 'Registra ventas para ver el análisis.';
 }

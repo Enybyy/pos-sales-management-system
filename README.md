@@ -1,115 +1,89 @@
-## 🇬🇧 English Summary
+MolleVentas es un registro web de ventas por turno en soles, con historial, copias JSON y análisis descriptivo para un puesto de comida.
 
-**Point-of-sale system with a built-in real-time business intelligence dashboard.**
+![MolleVentas en uso: formulario e historial](assets/screenshots/upwork-molleventas-4x3.png)
 
-**The problem:** small retail and food businesses close each day with notebooks and manual spreadsheets — cash mismatches, no shift accountability, and zero visibility into which days and hours actually make money.
+[Probar demo](https://enybyy.github.io/pos-sales-management-system/) · [Ver análisis](assets/screenshots/screenshot-pos-analytics.png) · [Ver versión móvil](assets/screenshots/screenshot-pos-mobile.png)
 
-**The solution:** a lightweight, responsive POS with an executive analytics dashboard. No subscription, runs from any phone or tablet at the counter.
+## Abrir la aplicación
 
-**Measured impact:**
+No necesita backend ni instalación de paquetes para funcionar. Desde la carpeta del proyecto:
 
-| Metric | Before | After |
-|---|---|---|
-| Daily cash reconciliation | 30–45 min | One click (~20 h saved/month) |
-| Seller & shift traceability | None | 100% |
-| Stock purchasing | Intuition | Driven by real peak-day data |
+```bash
+python -m http.server 5084 --bind 127.0.0.1
+```
 
-**Stack:** JavaScript (ES6+) · Tailwind CSS · Chart.js
+Abre `http://127.0.0.1:5084`. También se puede publicar la carpeta en GitHub Pages. Estilos, gráficos, iconos y fuentes están incluidos; la aplicación no hace solicitudes a servicios externos.
 
-🔗 **[Live demo](https://enybyy.github.io/pos-sales-management-system/)**
+## Explorar la demo
 
----
+1. El primer acceso carga seis turnos ficticios con fechas cercanas al día actual de Perú.
+2. Registra fecha, monto y vendedor. El horario y las notas son opcionales; si añades horario, completa inicio y fin.
+3. Usa **Todos**, **Semana** o **Mes** para filtrar el historial; edita o elimina un registro con sus botones.
+4. Abre **Análisis** para comparar días, ingresos por hora y duración de los turnos.
+5. **Backup** descarga todas las ventas en JSON. **Restaurar copia** valida un archivo y pide confirmar antes de reemplazar los datos.
+6. **Recargar ejemplo** reemplaza tus cambios por seis turnos ficticios, previa confirmación. Descarga una copia antes si quieres conservarlos.
 
-<details>
-<summary>📖 <b>Documentación completa en español</b> (click para expandir)</summary>
+Un registro representa el **total vendido en un turno**, no una línea de producto ni un comprobante. Un turno de 23:00 a 01:30 dura 2 h 30 min y se asigna a su fecha de inicio.
 
-# 🍗 MolleVentas — Sistema Web POS & Analítica Comercial para Gastronomía y Retail
-> **Digitalización de ventas diarias, control de turnos y analítica en tiempo real para negocios gastronómicos y comercios.**
+## Qué incluye
 
-<p align="center">
-  <a href="https://enybyy.github.io/pos-sales-management-system/" target="_blank">
-    <img src="https://img.shields.io/badge/▶️_PROBAR_DEMO_EN_VIVO-GitHub_Pages-22c55e?style=for-the-badge&logo=github&logoColor=white" alt="Demo en Vivo" />
-  </a>
-  <a href="https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-Eliud_RM-0284c7?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
-  </a>
-</p>
+- Crear, editar y eliminar ventas, con persistencia en `localStorage`.
+- Montos positivos con hasta dos decimales y sumas calculadas en céntimos.
+- Fecha de negocio en `America/Lima`; semana de lunes a domingo.
+- Ingreso por hora = ingresos de turnos con horario / horas totales de esos turnos.
+- Promedios por día calculados por registro. Las observaciones describen la muestra, sin atribuir causalidad, rentabilidad ni predicciones.
+- Copias JSON, restauración validada y preservación del archivo original si el almacenamiento contiene datos inválidos.
+- Diseño original ámbar/Poppins conservado; controles accesibles, navegación por teclado y vista móvil desde 360 px.
 
-<p align="center">
-  <img src="assets/screenshots/screenshot-pos-main.png" alt="Vista Principal del Punto de Venta" width="48%" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-  <img src="assets/screenshots/screenshot-pos-analytics.png" alt="Dashboard Analítico con Chart.js" width="48%" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
+## Alcance del prototipo
 
-[![Frontend](https://img.shields.io/badge/Frontend-HTML5%20%7C%20TailwindCSS%20%7C%20ES6+-orange.svg)](#-stack-tecnológico)
-[![Analytics](https://img.shields.io/badge/Analytics-Chart.js-yellow.svg)](#-funcionalidades-principales)
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-success.svg)](#)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+La demo funciona en un navegador y conserva los cambios en ese mismo origen/dispositivo. No tiene cuentas, servidor, sincronización entre equipos, inventario, emisión de comprobantes, procesamiento de pagos ni conciliación bancaria. Borrar los datos del navegador elimina el registro local; descarga copias periódicas si lo usas para explorar información propia.
 
----
+Las cifras de la demo son ficticias. Este repositorio no presenta ahorros de tiempo o resultados comerciales medidos. El análisis es JavaScript determinista y Chart.js; no usa IA.
 
-## 📌 El Desafío de Negocio
+## Verificar el código
 
-Muchos negocios de comida rápida, puestos de venta y pequeños comercios minoristas operan con anotaciones en cuadernos o memorias de cálculo manuales al cierre de cada jornada:
-- **Descuadres de caja diarios** y falta de conciliación de turnos entre diferentes vendedores.
-- **Cero visibilidad analítica** sobre qué días de la semana y qué franjas horarias generan el mayor retorno real.
-- **Pérdida de insumos** por compras mal calculadas al desconocer la velocidad real de rotación de productos.
-- **Barrera de costos**: Los softwares POS del mercado exigen pagos mensuales elevados, terminales caras y configuraciones complejas que no se ajustan a la realidad de negocios dinámicos.
+Las reglas de negocio se prueban sin instalar dependencias, con Node.js 18 o posterior:
 
----
+```bash
+node --test tests/core.test.cjs
+```
 
-## 💡 La Solución Implementada
+Para repetir las 29 comprobaciones de navegador y generar las capturas reales:
 
-**MolleVentas** fue diseñado desde cero como una **solución de punto de venta (POS) ligera, responsive y sin costes de suscripción**, operable directamente desde cualquier smartphone o tablet en el mostrador del negocio.
+```bash
+npm install
+npx playwright install chromium
+# Mantén el servidor de Python ejecutándose en otra terminal.
+npm run test:browser
+```
 
-Combina un módulo ultra rápido de cobro y registro diario con un **dashboard ejecutivo de Business Intelligence integrado**:
-1. Registrar ventas al instante con fecha, vendedor, turno y notas de operación.
-2. Supervisar métricas financieras consolidadas (ventas del día, acumulado mensual, ticket promedio).
-3. Analizar mediante gráficos interactivos (`Chart.js`) la productividad por hora, la distribución por días de la semana y la velocidad de venta.
+La prueba de navegador usa un perfil temporal aislado y genera datos ficticios; no modifica el almacenamiento de tu navegador habitual. [Resultados y cobertura](docs/verification.md).
 
-👉 **[Prueba la Demo Interactiva en Vivo aquí](https://enybyy.github.io/pos-sales-management-system/)**
+## Archivos
 
----
+| Ruta | Contenido |
+|---|---|
+| `index.html`, `css/style.css` | Interfaz y estilos propios |
+| `js/core.js` | Validación, fechas, céntimos y datos de ejemplo |
+| `js/app.js` | Formularios, almacenamiento, historial y copias |
+| `js/analytics.js` | Métricas y gráficos |
+| `tests/` | Reglas y recorrido de navegador |
+| `assets/screenshots/` | Capturas auténticas para GitHub y Upwork |
+| `assets/vendor/`, `assets/webfonts/` | Recursos locales y licencias de terceros |
 
-## 📈 Impacto y Mejoras Conseguidas
+## Imágenes para portafolio
 
-| Métrica / Área | Antes de la Solución | Con MolleVentas | Impacto de Negocio |
-|---|---|---|---|
-| **Cierre de Caja y Cuadre** | 30 a 45 min diarios en cuadernos con tachaduras | Instantáneo (en 1 clic) | **Ahorro de ~20 horas al mes** para el dueño del negocio |
-| **Trazabilidad por Vendedor** | Sin registro formal de turnos ni responsables | Registro de vendedor, hora inicio y fin por jornada | **100% de transparencia** en la administración de personal |
-| **Aprovisionamiento de Insumos** | Estimaciones por intuición | Decisiones basadas en días pico y velocidad de venta | **Reducción de mermas de insumos perecibles** |
-| **Costo de Software** | Planes mensuales de $30 - $70 USD/mes | Solución propia sin suscripciones | **Ahorro recurrente garantizado** |
+- `assets/screenshots/upwork-molleventas-4x3.png`: vista de 1440 × 1080, proporción 4:3, lista para usar en Upwork.
+- `assets/screenshots/screenshot-pos-main.png`: formulario e historial en escritorio.
+- `assets/screenshots/screenshot-pos-analytics.png`: análisis con gráficos reales del prototipo.
+- `assets/screenshots/screenshot-pos-mobile.png`: recorrido completo en 360 px.
+- `assets/screenshots/screenshot-pos-mobile-analytics.png`: primera pantalla del análisis móvil.
 
----
+Todas fueron capturadas de la aplicación funcionando con registros ficticios. No son imágenes generadas ni pruebas de ventas reales.
 
-## ✨ Funcionalidades Principales
+## Recursos visuales
 
-- **Registro Rápido de Ventas**: Ingreso ágil de monto en soles (S/), fecha, vendedor, horarios de turno y observaciones de caja.
-- **Historial Interactivo con Filtros**: Segmentación por: *Todos*, *Esta Semana*, *Este Mes*.
-- **Gestión Completa (CRUD)**: Edición rápida o eliminación con confirmación.
-- **Dashboard Analítico Avanzado**:
-  - **Distribución por Día de la Semana**: Gráfico de barras comparativo para identificar días de mayor rentabilidad.
-  - **Horas Pico**: Mapa de impacto para optimizar preparación y personal en horas de alta demanda.
-  - **Velocidad de Venta y Turnos**: Métricas de eficiencia operativa.
-- **100% Responsive & Touch-Friendly**: Adaptado para trabajar cómodamente en teléfonos móviles, tablets o pantallas táctiles de mostrador.
+Tailwind CSS 3.4.17 (CSS de utilidades generado), Chart.js 4.4.9, Font Awesome Free 6.4.0 y Poppins se incluyen localmente. Sus licencias se conservan en `assets/vendor/`. [Criterio de presentación](docs/design.md).
 
----
-
-## 🛠️ Stack Tecnológico
-
-- **HTML5 Semántico**: Estructura limpia y accesible.
-- **Tailwind CSS & Custom CSS**: Interfaz moderna, rápida y adaptable.
-- **JavaScript ES6+**: Lógica reactiva en cliente y persistencia local (`localStorage`).
-- **Chart.js**: Renderizado dinámico de gráficos estadísticos.
-
----
-
-## 📬 ¿Necesitas una solución similar para tu negocio?
-
-Desarrollo **sistemas web a medida, soluciones POS personalizadas, paneles de administración y dashboards analíticos**.
-
-- **LinkedIn**: [Eliud RM](https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/)
-- **GitHub**: [@Enybyy](https://github.com/Enybyy)
-- *Disponible para proyectos freelance y consultoría tecnológica.*
-
-
-</details>
+Desarrollado por [Eliud Rojas Mendoza](https://github.com/Enybyy).

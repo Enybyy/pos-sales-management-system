@@ -1,594 +1,212 @@
-/**
- * MolleVentas - Sistema de Ventas
- * Módulo principal de la aplicación
- * v1.0.0
- */
-
-// ==========================================
-// CONFIGURACIÓN Y VARIABLES GLOBALES
-// ==========================================
+/** MolleVentas: local shift-sales register. */
 const DB_KEY = 'molleventas_db_v1';
 let ventasCache = [];
 let filtroActual = 'todos';
+let storageReady = true;
+let toastTimer;
+let editFocus;
+const $ = id => document.getElementById(id);
+const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-// ==========================================
-// INICIALIZACIÓN
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    inicializarApp();
-});
-
-// Lógica de Temporadas para Ventanilla, Perú
-function obtenerTemporada(fechaStr) {
-    if (!fechaStr) return 'Desconocida';
-    // fechaStr YYYY-MM-DD
-    const mes = parseInt(fechaStr.split('-')[1]);
-
-    // Enero(1) - Marzo(3): Verano
-    if (mes >= 1 && mes <= 3) return 'Verano ☀️';
-    // Abril(4) - Junio(6): Otoño
-    if (mes >= 4 && mes <= 6) return 'Otoño 🍂';
-    // Julio(7) - Septiembre(9): Invierno
-    if (mes >= 7 && mes <= 9) return 'Invierno 🌧️';
-    // Octubre(10) - Diciembre(12): Primavera
-    return 'Primavera 🌸';
-}
-
-
-// Precarga de datos demo si el storage esta vacio para portfolio showcase
-function precargarDatosDemoSiEstaVacio() {
-    const raw = localStorage.getItem(DB_KEY);
-    if (!raw || JSON.parse(raw).length === 0) {
-        const hoyStr = new Date().toISOString().split('T')[0];
-        const ayer = new Date(); ayer.setDate(ayer.getDate() - 1);
-        const ayerStr = ayer.toISOString().split('T')[0];
-        const anteayer = new Date(); anteayer.setDate(anteayer.getDate() - 2);
-        const anteayerStr = anteayer.toISOString().split('T')[0];
-        const hace3 = new Date(); hace3.setDate(hace3.getDate() - 3);
-        const hace3Str = hace3.toISOString().split('T')[0];
-
-        const demoVentas = [
-            { id: 'demo-1', fecha: hoyStr, monto: 145.50, vendedor: 'Marta R.', hora_inicio: '18:00', hora_fin: '22:30', notas: 'Alta afluencia de pedidos con cremas', createdAt: new Date().toISOString() },
-            { id: 'demo-2', fecha: hoyStr, monto: 98.00, vendedor: 'Carlos M.', hora_inicio: '18:30', hora_fin: '21:30', notas: 'Turno tarde', createdAt: new Date().toISOString() },
-            { id: 'demo-3', fecha: ayerStr, monto: 230.00, vendedor: 'Marta R.', hora_inicio: '17:30', hora_fin: '23:00', notas: 'Venta de combos familiares y gaseosas', createdAt: new Date().toISOString() },
-            { id: 'demo-4', fecha: ayerStr, monto: 180.50, vendedor: 'Eliud RM', hora_inicio: '18:00', hora_fin: '22:45', notas: 'Día viernes pico de ventas', createdAt: new Date().toISOString() },
-            { id: 'demo-5', fecha: anteayerStr, monto: 165.00, vendedor: 'Carlos M.', hora_inicio: '18:00', hora_fin: '22:00', notas: 'Normal', createdAt: new Date().toISOString() },
-            { id: 'demo-6', fecha: hace3Str, monto: 195.00, vendedor: 'Marta R.', hora_inicio: '17:45', hora_fin: '22:30', notas: 'Buena rotación de mollejitas con yuca', createdAt: new Date().toISOString() }
-        ];
-        localStorage.setItem(DB_KEY, JSON.stringify(demoVentas));
-    }
-}
-
-async function inicializarApp() {
-    precargarDatosDemoSiEstaVacio();
-    // Mostrar fecha actual
+document.addEventListener('DOMContentLoaded', inicializarApp);
+function inicializarApp() {
     mostrarFechaActual();
-
-    // Establecer fecha de hoy en el formulario
-    const hoy = new Date();
-    const year = hoy.getFullYear();
-    const month = String(hoy.getMonth() + 1).padStart(2, '0');
-    const day = String(hoy.getDate()).padStart(2, '0');
-    document.getElementById('fecha').value = `${year}-${month}-${day}`;
-
-    // Cargar ventas existentes
-    await cargarVentas();
-
-    // Actualizar lista de vendedores para autocompletado
-    actualizarListaVendedores();
-
-    // Configurar eventos
+    establecerFechaLocalInput('fecha');
+    cargarVentas();
     configurarEventos();
-}
-
-function actualizarListaVendedores() {
-    if (!ventasCache || ventasCache.length === 0) return;
-
-    // Obtener vendedores únicos, no vacíos, ordenados alfabéticamente
-    const vendedores = [...new Set(ventasCache
-        .map(v => v.vendedor ? v.vendedor.trim() : '') // Obtener nombres
-        .filter(nombre => nombre.length > 0) // Filtrar vacíos
-    )].sort();
-
-    const datalist = document.getElementById('lista-vendedores');
-    if (datalist) {
-        datalist.innerHTML = vendedores.map(v => `<option value="${v}">`).join('');
-    }
-}
-
-// ==========================================
-// UTILIDADES DE FECHA
-// ==========================================
-function mostrarFechaActual() {
-    const hoy = new Date();
-    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const fechaFormateada = hoy.toLocaleDateString('es-ES', opciones);
-    document.getElementById('fecha-actual').textContent = fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
-}
-
-function formatearFecha(fecha) {
-    // fecha viene como YYYY-MM-DD
-    const partes = fecha.split('-');
-    const date = new Date(partes[0], partes[1] - 1, partes[2]);
-    const opciones = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
-    return date.toLocaleDateString('es-ES', opciones);
-}
-
-function formatearHoraAmPm(hora24) {
-    if (!hora24) return '';
-    const [horas, minutos] = hora24.split(':');
-    const horasNum = parseInt(horas, 10);
-    const ampm = horasNum >= 12 ? 'PM' : 'AM';
-    const horas12 = horasNum % 12 || 12;
-    return `${horas12}:${minutos} ${ampm}`;
-}
-
-function obtenerDiaSemana(fecha) {
-    const partes = fecha.split('-');
-    const date = new Date(partes[0], partes[1] - 1, partes[2]);
-    const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    return dias[date.getDay()];
-}
-
-function esMismoDia(fecha1, fecha2) {
-    // fecha1: string YYYY-MM-DD
-    // fecha2: Date object
-    if (!fecha1) return false;
-    const partes = fecha1.split('-');
-    const d1Year = parseInt(partes[0]);
-    const d1Month = parseInt(partes[1]) - 1;
-    const d1Day = parseInt(partes[2]);
-
-    return d1Year === fecha2.getFullYear() &&
-        d1Month === fecha2.getMonth() &&
-        d1Day === fecha2.getDate();
-}
-
-function esEstaSemana(fecha) {
-    const hoy = new Date();
-    const fechaVenta = new Date(fecha + 'T00:00:00');
-
-    // Obtener el lunes de esta semana
-    const primerDiaSemana = new Date(hoy);
-    const diaSemana = hoy.getDay() || 7; // Convertir domingo (0) a 7 para facilitar cálculo
-    primerDiaSemana.setDate(hoy.getDate() - diaSemana + 1);
-    primerDiaSemana.setHours(0, 0, 0, 0);
-
-    // Obtener el final de la semana
-    const ultimoDiaSemana = new Date(primerDiaSemana);
-    ultimoDiaSemana.setDate(primerDiaSemana.getDate() + 6);
-    ultimoDiaSemana.setHours(23, 59, 59, 999);
-
-    return fechaVenta >= primerDiaSemana && fechaVenta <= ultimoDiaSemana;
-}
-
-function esEsteMes(fecha) {
-    const hoy = new Date();
-    const fechaVenta = new Date(fecha + 'T00:00:00');
-    return fechaVenta.getMonth() === hoy.getMonth() &&
-        fechaVenta.getFullYear() === hoy.getFullYear();
-}
-
-// ==========================================
-// ALMACENAMIENTO - LOCALSTORAGE
-// ==========================================
-async function cargarVentas() {
-    try {
-        // Simular pequeño delay para UX
-        await new Promise(resolve => setTimeout(resolve, 300));
-
-        const rawData = localStorage.getItem(DB_KEY);
-        ventasCache = rawData ? JSON.parse(rawData) : [];
-
-        actualizarEstadisticas();
-        renderizarVentas();
-    } catch (error) {
-        console.error('Error cargando ventas:', error);
-        mostrarToast('Error al cargar las ventas', 'error');
-    }
-}
-
-async function guardarVenta(ventaData) {
-    try {
-        // Crear nueva venta con ID único
-        const nuevaVenta = {
-            id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-            ...ventaData,
-            createdAt: new Date().toISOString()
-        };
-
-        // Agregar al inicio del array
-        ventasCache.unshift(nuevaVenta);
-
-        // Guardar persistente
-        localStorage.setItem(DB_KEY, JSON.stringify(ventasCache));
-
-        actualizarEstadisticas();
-        actualizarListaVendedores();
-        renderizarVentas();
-        mostrarToast('¡Venta registrada correctamente! 🎉', 'success');
-
-        return nuevaVenta;
-    } catch (error) {
-        console.error('Error guardando venta:', error);
-        mostrarToast('Error al guardar la venta', 'error');
-        throw error;
-    }
-}
-
-async function actualizarVenta(id, ventaData) {
-    try {
-        const index = ventasCache.findIndex(v => v.id === id);
-        if (index === -1) throw new Error('Venta no encontrada');
-
-        // Mantener propiedades originales como fecha creación
-        const ventaActualizada = {
-            ...ventasCache[index],
-            ...ventaData,
-            updatedAt: new Date().toISOString()
-        };
-
-        ventasCache[index] = ventaActualizada;
-
-        localStorage.setItem(DB_KEY, JSON.stringify(ventasCache));
-
-        actualizarEstadisticas();
-        actualizarListaVendedores();
-        renderizarVentas();
-        mostrarToast('¡Venta actualizada correctamente! ✅', 'success');
-
-        return ventaActualizada;
-    } catch (error) {
-        console.error('Error actualizando venta:', error);
-        mostrarToast('Error al actualizar la venta', 'error');
-        throw error;
-    }
-}
-
-async function eliminarVenta(id) {
-    try {
-        ventasCache = ventasCache.filter(v => v.id !== id);
-        localStorage.setItem(DB_KEY, JSON.stringify(ventasCache));
-
-        actualizarEstadisticas();
-        actualizarListaVendedores();
-        renderizarVentas();
-        mostrarToast('Venta eliminada', 'success');
-    } catch (error) {
-        console.error('Error eliminando venta:', error);
-        mostrarToast('Error al eliminar la venta', 'error');
-        throw error;
-    }
-}
-
-// ==========================================
-// ESTADÍSTICAS
-// ==========================================
-function actualizarEstadisticas() {
-    const hoy = new Date();
-
-    // Ventas de hoy
-    const ventasHoy = ventasCache
-        .filter(v => esMismoDia(v.fecha, hoy))
-        .reduce((sum, v) => sum + (parseFloat(v.monto) || 0), 0);
-
-    // Ventas del mes
-    const ventasMes = ventasCache
-        .filter(v => esEsteMes(v.fecha))
-        .reduce((sum, v) => sum + (parseFloat(v.monto) || 0), 0);
-
-    // Total registros
-    const totalRegistros = ventasCache.length;
-
-    // Actualizar UI con animación
-    animarNumero('ventas-hoy', ventasHoy, 'S/ ');
-    animarNumero('ventas-mes', ventasMes, 'S/ ');
-    document.getElementById('total-registros').textContent = totalRegistros;
-}
-
-function animarNumero(elementId, valor, prefijo = '') {
-    const element = document.getElementById(elementId);
-    const valorFinal = parseFloat(valor) || 0;
-    const duracion = 500;
-    const fps = 60;
-    const incremento = valorFinal / (duracion / 1000 * fps);
-    let valorActual = 0;
-
-    const intervalo = setInterval(() => {
-        valorActual += incremento;
-        if (valorActual >= valorFinal) {
-            valorActual = valorFinal;
-            clearInterval(intervalo);
-        }
-        element.textContent = `${prefijo}${valorActual.toFixed(2)}`;
-    }, 1000 / fps);
-}
-
-// ==========================================
-// RENDERIZADO
-// ==========================================
-function renderizarVentas() {
-    const container = document.getElementById('lista-ventas');
-
-    // Filtrar según selección
-    let ventasFiltradas = [...ventasCache];
-
-    if (filtroActual === 'semana') {
-        ventasFiltradas = ventasFiltradas.filter(v => esEstaSemana(v.fecha));
-    } else if (filtroActual === 'mes') {
-        ventasFiltradas = ventasFiltradas.filter(v => esEsteMes(v.fecha));
-    }
-
-    // Ordenar por fecha descendente
-    ventasFiltradas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
-    if (ventasFiltradas.length === 0) {
-        container.innerHTML = `
-            <div class="text-center py-12 text-gray-400">
-                <i class="fas fa-receipt text-5xl mb-4"></i>
-                <p>No hay ventas registradas</p>
-                <p class="text-sm">${filtroActual === 'todos' ? '¡Registra tu primera venta!' : 'No hay ventas en este período'}</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = ventasFiltradas.map((venta, index) => `
-        <div class="venta-card rounded-xl p-4 relative" style="animation-delay: ${index * 0.05}s">
-            <div class="flex items-start justify-between">
-                <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="dia-badge">${obtenerDiaSemana(venta.fecha)}</span>
-                        <span class="text-gray-500 text-sm">${formatearFecha(venta.fecha)}</span>
-                    </div>
-                    <p class="text-2xl font-bold venta-monto">S/ ${parseFloat(venta.monto).toFixed(2)}</p>
-                    ${venta.vendedor ? `
-                        <p class="text-gray-600 text-sm mt-1">
-                            <i class="fas fa-user text-blue-400 mr-1"></i> ${venta.vendedor}
-                        </p>
-                    ` : ''}
-                    ${venta.hora_inicio || venta.hora_fin ? `
-                        <p class="text-gray-500 text-xs mt-1 bg-gray-50 inline-block px-2 py-1 rounded-lg border border-gray-100">
-                            <i class="fas fa-clock text-orange-400 mr-1"></i>
-                            ${formatearHoraAmPm(venta.hora_inicio) || '--:--'} - ${formatearHoraAmPm(venta.hora_fin) || '--:--'}
-                        </p>
-                    ` : ''}
-                    ${venta.notas ? `
-                        <p class="text-gray-400 text-xs mt-2 italic">
-                            <i class="fas fa-sticky-note text-yellow-400 mr-1"></i> ${venta.notas}
-                        </p>
-                    ` : ''}
-                </div>
-                <div class="flex flex-col gap-2">
-                    <button onclick="abrirModalEditar('${venta.id}')" 
-                        class="accion-btn editar text-gray-400 hover:text-blue-500 transition-colors p-2"
-                        title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="confirmarEliminar('${venta.id}')" 
-                        class="accion-btn eliminar text-gray-400 hover:text-red-500 transition-colors p-2"
-                        title="Eliminar">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-// ==========================================
-// FILTROS
-// ==========================================
-function filtrarVentas(filtro) {
-    filtroActual = filtro;
-
-    // Actualizar botones
-    document.querySelectorAll('.filtro-btn').forEach(btn => {
-        btn.classList.remove('active', 'bg-amber-500', 'text-white');
-        btn.classList.add('bg-gray-100', 'text-gray-600');
+    document.querySelectorAll('a[target="_blank"]').forEach(link => link.rel = 'noopener noreferrer');
+    document.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach(input => {
+        if (!input.getAttribute('aria-label')) input.setAttribute('aria-label', input.id.replaceAll('-', ' '));
     });
-
-    event.target.classList.remove('bg-gray-100', 'text-gray-600');
-    event.target.classList.add('active', 'bg-amber-500', 'text-white');
-
+}
+function establecerFechaLocalInput(id) { $(id).value = MolleCore.today(); }
+function mostrarFechaActual() {
+    const label = new Date(MolleCore.today() + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    $('fecha-actual').textContent = label.charAt(0).toUpperCase() + label.slice(1);
+}
+function formatearFecha(value) {
+    return new Date(value + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+}
+function formatearHoraAmPm(value) {
+    if (!value) return '';
+    const [hour, minute] = value.split(':');
+    return `${Number(hour) % 12 || 12}:${minute} ${Number(hour) >= 12 ? 'PM' : 'AM'}`;
+}
+function obtenerDiaSemana(value) { return dias[MolleCore.weekday(value)]; }
+function esEstaSemana(value) { return MolleCore.inWeek(value); }
+function esEsteMes(value) { return MolleCore.inMonth(value); }
+function actualizarVista() {
+    actualizarEstadisticas(); actualizarListaVendedores(); renderizarVentas();
+    if (!$('modal-dashboard').classList.contains('hidden')) actualizarDashboard(ventasCache);
+}
+function cargarVentas() {
+    try {
+        const raw = localStorage.getItem(DB_KEY);
+        const next = raw === null ? MolleCore.demo() : MolleCore.records(JSON.parse(raw));
+        if (raw === null) localStorage.setItem(DB_KEY, JSON.stringify(next));
+        ventasCache = next;
+    } catch (error) {
+        storageReady = false;
+        $('storage-alert').hidden = false;
+        $('storage-alert').textContent = 'No se pudo abrir el almacenamiento. Tus datos originales se conservan. Descarga el archivo original o restaura una copia válida antes de registrar ventas.';
+        mostrarToast('Almacenamiento no disponible o datos inválidos.', 'error');
+    }
+    actualizarVista();
+}
+function persistir(next) {
+    if (!storageReady) throw new Error('Restaura una copia válida antes de registrar ventas.');
+    next = MolleCore.records(next);
+    // Commit memory only after durable storage succeeds.
+    localStorage.setItem(DB_KEY, JSON.stringify(next));
+    ventasCache = next;
+    actualizarVista();
+}
+async function guardarVenta(data) {
+    try {
+        const next = { id: crypto.randomUUID(), ...MolleCore.sale(data), createdAt: new Date().toISOString() };
+        persistir([next, ...ventasCache]);
+        mostrarToast('Venta registrada correctamente.');
+        return next;
+    } catch (error) { mostrarToast(error.message || 'No se pudo guardar la venta.', 'error'); throw error; }
+}
+async function actualizarVenta(id, data) {
+    try {
+        if (!ventasCache.some(sale => sale.id === id)) throw new Error('Venta no encontrada.');
+        const next = ventasCache.map(sale => sale.id === id ? { ...sale, ...MolleCore.sale(data), updatedAt: new Date().toISOString() } : sale);
+        persistir(next);
+        mostrarToast('Venta actualizada correctamente.');
+    } catch (error) { mostrarToast(error.message || 'No se pudo actualizar la venta.', 'error'); throw error; }
+}
+async function eliminarVenta(id) {
+    try { persistir(ventasCache.filter(sale => sale.id !== id)); mostrarToast('Venta eliminada.'); }
+    catch (error) { mostrarToast(error.message || 'No se pudo eliminar la venta.', 'error'); }
+}
+function actualizarEstadisticas() {
+    $('ventas-hoy').textContent = `S/ ${MolleCore.sum(ventasCache.filter(sale => sale.fecha === MolleCore.today())).toFixed(2)}`;
+    $('ventas-mes').textContent = `S/ ${MolleCore.sum(ventasCache.filter(sale => esEsteMes(sale.fecha))).toFixed(2)}`;
+    $('total-registros').textContent = ventasCache.length;
+}
+function actualizarListaVendedores() {
+    $('lista-vendedores').replaceChildren();
+    [...new Set(ventasCache.map(sale => sale.vendedor).filter(Boolean))].sort().forEach(value => {
+        const option = document.createElement('option'); option.value = value; $('lista-vendedores').append(option);
+    });
+}
+function renderizarVentas() {
+    const filtered = ventasCache.filter(sale => filtroActual === 'todos' || (filtroActual === 'semana' ? esEstaSemana(sale.fecha) : esEsteMes(sale.fecha))).sort((a, b) => b.fecha.localeCompare(a.fecha) || (b.createdAt || '').localeCompare(a.createdAt || ''));
+    $('lista-ventas').innerHTML = filtered.length ? filtered.map(sale => `
+        <article class="venta-card rounded-xl p-4 relative">
+            <div class="flex items-start justify-between gap-3"><div class="flex-1 min-w-0">
+                <div class="flex items-center flex-wrap gap-2 mb-2"><span class="dia-badge">${obtenerDiaSemana(sale.fecha)}</span><span class="text-gray-500 text-sm">${formatearFecha(sale.fecha)}</span></div>
+                <p class="text-2xl font-bold venta-monto">S/ ${sale.monto.toFixed(2)}</p>
+                ${sale.vendedor ? `<p class="text-gray-600 text-sm mt-1"><i class="fas fa-user text-blue-400 mr-1" aria-hidden="true"></i> ${MolleCore.escape(sale.vendedor)}</p>` : ''}
+                ${sale.hora_inicio ? `<p class="text-gray-500 text-xs mt-1 bg-gray-50 inline-block px-2 py-1 rounded-lg border border-gray-100"><i class="fas fa-clock text-orange-400 mr-1" aria-hidden="true"></i> ${formatearHoraAmPm(sale.hora_inicio)} – ${formatearHoraAmPm(sale.hora_fin)}${sale.hora_fin < sale.hora_inicio ? ' (+1 día)' : ''}</p>` : ''}
+                ${sale.notas ? `<p class="text-gray-500 text-xs mt-2 italic">${MolleCore.escape(sale.notas)}</p>` : ''}
+            </div><div class="flex flex-col gap-2">
+                <button data-action="edit" data-id="${sale.id}" class="accion-btn editar text-gray-500 p-2" aria-label="Editar venta de ${sale.monto.toFixed(2)} soles"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                <button data-action="delete" data-id="${sale.id}" class="accion-btn eliminar text-gray-500 p-2" aria-label="Eliminar venta de ${sale.monto.toFixed(2)} soles"><i class="fas fa-trash" aria-hidden="true"></i></button>
+            </div></div>
+        </article>`).join('') : '<div class="text-center py-12 text-gray-500"><i class="fas fa-receipt text-5xl mb-4" aria-hidden="true"></i><p>No hay ventas en este período.</p><p class="text-sm">Registra un turno o cambia el filtro.</p></div>';
+}
+function filtrarVentas(filter, button) {
+    if (!['todos', 'semana', 'mes'].includes(filter)) return;
+    filtroActual = filter;
+    document.querySelectorAll('.filtro-btn').forEach(item => {
+        const selected = item === button || item.dataset.filter === filter;
+        item.classList.toggle('active', selected); item.classList.toggle('bg-amber-500', selected); item.classList.toggle('text-white', selected);
+        item.classList.toggle('bg-gray-100', !selected); item.classList.toggle('text-gray-600', !selected); item.setAttribute('aria-pressed', String(selected));
+    });
     renderizarVentas();
 }
-
-// ==========================================
-// MODAL DE EDICIÓN
-// ==========================================
 function abrirModalEditar(id) {
-    const venta = ventasCache.find(v => v.id === id);
-    if (!venta) return;
-
-    document.getElementById('editar-id').value = venta.id;
-    document.getElementById('editar-fecha').value = venta.fecha ? venta.fecha.split('T')[0] : '';
-    document.getElementById('editar-monto').value = venta.monto;
-    document.getElementById('editar-vendedor').value = venta.vendedor || '';
-
-    // Asignar hora inicio
-    descomponerHoraParaSelects(venta.hora_inicio, 'editar-hora-inicio');
-    // Asignar hora fin
-    descomponerHoraParaSelects(venta.hora_fin, 'editar-hora-fin');
-
-    document.getElementById('editar-notas').value = venta.notas || '';
-
-    const modal = document.getElementById('modal-editar');
-    modal.classList.remove('hidden');
-    setTimeout(() => modal.classList.add('show'), 10);
+    const sale = ventasCache.find(sale => sale.id === id); if (!sale) return;
+    editFocus = document.activeElement;
+    for (const field of ['id', 'fecha', 'monto', 'vendedor', 'notas']) $(`editar-${field}`).value = sale[field] || '';
+    descomponerHoraParaSelects(sale.hora_inicio, 'editar-hora-inicio');
+    descomponerHoraParaSelects(sale.hora_fin, 'editar-hora-fin');
+    $('modal-editar').classList.remove('hidden'); $('modal-editar').classList.add('show');
+    document.body.style.overflow = 'hidden'; $('editar-fecha').focus();
 }
-
 function cerrarModal() {
-    const modal = document.getElementById('modal-editar');
-    modal.classList.remove('show');
-    setTimeout(() => modal.classList.add('hidden'), 300);
+    if (!$('modal-editar').classList.contains('show')) return;
+    $('modal-editar').classList.remove('show'); $('modal-editar').classList.add('hidden'); document.body.style.overflow = '';
+    if (editFocus && editFocus.isConnected) editFocus.focus();
+    else $('monto').focus();
 }
-
-// ==========================================
-// CONFIRMACIÓN DE ELIMINACIÓN
-// ==========================================
 function confirmarEliminar(id) {
-    const venta = ventasCache.find(v => v.id === id);
-    if (!venta) return;
-
-    const confirmacion = confirm(`¿Estás seguro de eliminar la venta de S/ ${parseFloat(venta.monto).toFixed(2)} del ${formatearFecha(venta.fecha)}?`);
-
-    if (confirmacion) {
-        eliminarVenta(id);
-    }
+    const sale = ventasCache.find(sale => sale.id === id);
+    if (sale && confirm(`¿Eliminar la venta de S/ ${sale.monto.toFixed(2)} del ${formatearFecha(sale.fecha)}?`)) eliminarVenta(id);
 }
-
-// ==========================================
-// TOAST / NOTIFICACIONES
-// ==========================================
-function mostrarToast(mensaje, tipo = 'success') {
-    const toast = document.getElementById('toast');
-    const toastMensaje = document.getElementById('toast-mensaje');
-
-    toastMensaje.textContent = mensaje;
-    toast.classList.remove('success', 'error');
-    toast.classList.add(tipo, 'show');
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
+function mostrarToast(message, type = 'success') {
+    clearTimeout(toastTimer); $('toast-mensaje').textContent = message; $('toast').classList.remove('success', 'error'); $('toast').classList.add(type, 'show');
+    toastTimer = setTimeout(() => $('toast').classList.remove('show'), 4500);
 }
-
-// ==========================================
-// EVENTOS
-// ==========================================
-// Auxiliar: Construye HH:mm (24h) desde selects (h, m, ampm)
-function construirHoraDesdeSelects(prefixId) {
-    const h = document.getElementById(`${prefixId}-h`).value;
-    const m = document.getElementById(`${prefixId}-m`).value;
-    const ampm = document.getElementById(`${prefixId}-ampm`).value;
-
-    if (!h || !m) return '';
-
-    let horas = parseInt(h);
-    if (ampm === 'PM' && horas !== 12) horas += 12;
-    if (ampm === 'AM' && horas === 12) horas = 0;
-
-    return `${String(horas).padStart(2, '0')}:${m}`;
+function construirHoraDesdeSelects(prefix) {
+    const h = $(`${prefix}-h`).value, m = $(`${prefix}-m`).value, period = $(`${prefix}-ampm`).value;
+    if (!h) return '';
+    return `${String(Number(h) % 12 + (period === 'PM' ? 12 : 0)).padStart(2, '0')}:${m}`;
 }
-
-// Auxiliar: Llena los selects desde HH:mm (24h)
-function descomponerHoraParaSelects(hora24, prefixId) {
-    if (!hora24) {
-        document.getElementById(`${prefixId}-h`).value = '';
-        document.getElementById(`${prefixId}-m`).value = '00';
-        document.getElementById(`${prefixId}-ampm`).value = 'AM';
-        return;
-    }
-
-    const [h, m] = hora24.split(':');
-    let horas = parseInt(h);
-    const ampm = horas >= 12 ? 'PM' : 'AM';
-
-    horas = horas % 12;
-    horas = horas ? horas : 12; // el 0 se vuelve 12
-
-    document.getElementById(`${prefixId}-h`).value = horas;
-    document.getElementById(`${prefixId}-m`).value = m;
-    document.getElementById(`${prefixId}-ampm`).value = ampm;
+function descomponerHoraParaSelects(time, prefix) {
+    const [h, m] = (time || '00:00').split(':');
+    $(`${prefix}-h`).value = time ? Number(h) % 12 || 12 : '';
+    $(`${prefix}-m`).value = m; $(`${prefix}-ampm`).value = Number(h) >= 12 ? 'PM' : 'AM';
 }
-
-// ==========================================
-// EVENTOS
-// ==========================================
-function configurarEventos() {
-    // Formulario de nueva venta
-    document.getElementById('form-venta').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const ventaData = {
-            fecha: document.getElementById('fecha').value,
-            monto: parseFloat(document.getElementById('monto').value),
-            vendedor: document.getElementById('vendedor').value.trim(),
-            hora_inicio: construirHoraDesdeSelects('hora-inicio'),
-            hora_fin: construirHoraDesdeSelects('hora-fin'),
-            notas: document.getElementById('notas').value.trim(),
-            temporada: obtenerTemporada(document.getElementById('fecha').value)
-        };
-
-        try {
-            await guardarVenta(ventaData);
-            e.target.reset();
-            // Restablecer fecha a hoy
-            establecerFechaLocalInput('fecha');
-        } catch (error) {
-            // Error ya manejado en guardarVenta
-        }
-    });
-
-    // Formulario de edición
-    document.getElementById('form-editar').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const id = document.getElementById('editar-id').value;
-        const fecha = document.getElementById('editar-fecha').value;
-        const ventaData = {
-            fecha: fecha,
-            monto: parseFloat(document.getElementById('editar-monto').value),
-            vendedor: document.getElementById('editar-vendedor').value.trim(),
-            hora_inicio: construirHoraDesdeSelects('editar-hora-inicio'),
-            hora_fin: construirHoraDesdeSelects('editar-hora-fin'),
-            notas: document.getElementById('editar-notas').value.trim(),
-            temporada: obtenerTemporada(fecha) // Recalcular temporada al editar
-        };
-
-        try {
-            await actualizarVenta(id, ventaData);
-            cerrarModal();
-        } catch (error) {
-            // Error ya manejado en actualizarVenta
-        }
-    });
+function formData(prefix = '') {
+    return { fecha: $(prefix + 'fecha').value, monto: $(prefix + 'monto').value, vendedor: $(prefix + 'vendedor').value, hora_inicio: construirHoraDesdeSelects(prefix + 'hora-inicio'), hora_fin: construirHoraDesdeSelects(prefix + 'hora-fin'), notas: $(prefix + 'notas').value };
 }
-
-// ==========================================
-// EXPORTAR Y BACKUP
-// ==========================================
+function descargarJSON(content, name) {
+    const url = URL.createObjectURL(new Blob([content], { type: 'application/json;charset=utf-8' }));
+    const link = document.createElement('a'); link.href = url; link.download = name; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 function exportarDatos() {
-    if (ventasCache.length === 0) {
-        mostrarToast('No hay datos para exportar', 'error');
-        return;
-    }
-
-    const dataStr = JSON.stringify(ventasCache, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-    const exportFileDefaultName = `backup_molleventas_${new Date().toISOString().split('T')[0]}.json`;
-
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-
-    mostrarToast('Backup descargado correctamente 📦', 'success');
+    if (!storageReady) { descargarOriginal(); return; }
+    descargarJSON(JSON.stringify(ventasCache, null, 2), `backup_molleventas_${MolleCore.today()}.json`); mostrarToast('Copia JSON descargada.');
 }
-
-window.exportarDatos = exportarDatos; // Exponer globalmente
-
-// Cerrar modal al hacer clic fuera
-document.getElementById('modal-editar').addEventListener('click', (e) => {
-    if (e.target.id === 'modal-editar') {
-        cerrarModal();
-    }
-});
-
-// Cerrar modal con Escape
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        cerrarModal();
-    }
-});
-
-// Exponer funciones al scope global para los onclick en HTML
-window.filtrarVentas = filtrarVentas;
-window.abrirModalEditar = abrirModalEditar;
-window.cerrarModal = cerrarModal;
-window.confirmarEliminar = confirmarEliminar;
-
-// Acceso a datos para analíticas
+function descargarOriginal() {
+    try { descargarJSON(localStorage.getItem(DB_KEY) || '[]', 'molleventas_original.json'); }
+    catch { mostrarToast('El navegador bloquea el almacenamiento. Permite su uso y recarga.', 'error'); }
+}
+async function importarDatos(event) {
+    const file = event.target.files[0]; if (!file) return;
+    try {
+        if (file.size > 10 * 1024 * 1024) throw new Error('La copia no puede superar 10 MB.');
+        const next = MolleCore.records(JSON.parse(await file.text()));
+        if (!confirm(`¿Restaurar ${next.length} ventas? Reemplazará los datos locales. Descarga primero una copia si quieres conservarlos.`)) return;
+        localStorage.setItem(DB_KEY, JSON.stringify(next)); ventasCache = next; storageReady = true; $('storage-alert').hidden = true; actualizarVista();
+        mostrarToast('Copia restaurada correctamente.');
+    } catch (error) { mostrarToast(error instanceof SyntaxError ? 'El archivo no contiene JSON válido.' : error.message, 'error'); }
+    finally { event.target.value = ''; }
+}
+function restaurarDemo() {
+    if (!confirm('¿Reemplazar las ventas locales por seis registros ficticios de ejemplo? Descarga antes una copia para conservar tus cambios.')) return;
+    try { localStorage.setItem(DB_KEY, JSON.stringify(MolleCore.demo())); storageReady = true; $('storage-alert').hidden = true; cargarVentas(); mostrarToast('Datos de ejemplo restaurados.'); }
+    catch { mostrarToast('El navegador no permite guardar datos.', 'error'); }
+}
+function configurarEventos() {
+    $('form-venta').addEventListener('submit', async event => {
+        event.preventDefault();
+        try { await guardarVenta(formData()); event.target.reset(); establecerFechaLocalInput('fecha'); } catch {}
+    });
+    $('form-editar').addEventListener('submit', async event => {
+        event.preventDefault(); try { await actualizarVenta($('editar-id').value, formData('editar-')); cerrarModal(); } catch {}
+    });
+    $('lista-ventas').addEventListener('click', event => {
+        const button = event.target.closest('[data-action]'); if (!button) return;
+        button.dataset.action === 'edit' ? abrirModalEditar(button.dataset.id) : confirmarEliminar(button.dataset.id);
+    });
+    $('import-file').addEventListener('change', importarDatos);
+    $('modal-editar').addEventListener('click', event => { if (event.target.id === 'modal-editar') cerrarModal(); });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') cerrarModal();
+        if (event.key !== 'Tab') return;
+        const modal = document.querySelector('#modal-editar.show') || (!$('modal-dashboard').classList.contains('hidden') ? $('modal-dashboard') : null);
+        if (!modal) return;
+        const focusable = [...modal.querySelectorAll('button, input:not([type="hidden"]), select, textarea, a[href]')];
+        const first = focusable[0], last = focusable.at(-1);
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+    window.addEventListener('storage', event => { if (event.key === DB_KEY) { storageReady = true; cargarVentas(); } });
+}
 window.obtenerVentasGlobal = () => ventasCache;

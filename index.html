@@ -4,34 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍗 MolleVentas - Sistema de Ventas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <title>MolleVentas · Registro de ventas por turno</title>
+    <meta name="description" content="Demo local de registro de ventas en soles, turnos, filtros y análisis. Datos de ejemplo ficticios, guardados en tu navegador.">
+    <link rel="stylesheet" href="assets/vendor/tailwind.css">
+    <script src="assets/vendor/chart.umd.js"></script>
+    <link rel="stylesheet" href="assets/vendor/fontawesome.css">
+    <link rel="stylesheet" href="assets/vendor/poppins.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 
-    <!-- Portfolio Banner Showcase -->
-    <div style="background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%); border-bottom: 1px solid #334155; padding: 10px 16px; color: #f8fafc; font-family: sans-serif; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px;">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="display: inline-block; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e;"></span>
-        <strong>Demo Interactiva en Vivo</strong> | MolleVentas POS por <strong>Eliud RM</strong> (Freelance Developer)
-      </div>
-      <div style="display: flex; gap: 12px;">
-        <a href="https://github.com/Enybyy/pos-sales-management-system" target="_blank" style="color: #38bdf8; text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 500;">
-          <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
-          Ver Repositorio
-        </a>
-        <a href="https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/" target="_blank" style="background: #0284c7; color: #fff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-          Contactar en LinkedIn
-        </a>
-      </div>
+<body class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div class="demo-banner">
+        <p><strong>Demo de portafolio</strong> · Seis turnos ficticios para explorar. Tus cambios se guardan en este navegador.</p>
+        <a href="https://github.com/Enybyy/pos-sales-management-system" target="_blank" rel="noopener noreferrer">Código e instalación</a>
     </div>
 
-<body class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
     <!-- Header -->
     <header class="bg-gradient-to-r from-amber-600 to-orange-500 text-white shadow-lg sticky top-0 z-40">
         <div class="container mx-auto px-4 py-4">
@@ -40,18 +29,18 @@
                     <div class="text-4xl">🍗</div>
                     <div>
                         <h1 class="text-2xl font-bold">MolleVentas</h1>
-                        <p class="text-amber-100 text-sm">Sistema de Ventas - Mollejitas & Más</p>
+                        <p class="text-amber-100 text-sm">Ventas por turno · Mollejitas &amp; Más</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-4">
                         <!-- Botón Exportar -->
-                        <button onclick="exportarDatos()"
+                        <button onclick="exportarDatos()" aria-label="Descargar copia JSON"
                             class="hidden md:flex items-center gap-2 bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg transition-all font-medium shadow-md">
                             <i class="fas fa-download"></i>
                             <span>Backup</span>
                         </button>
-                        <button onclick="abrirDashboard()"
+                        <button onclick="abrirDashboard()" aria-label="Abrir análisis"
                             class="hidden md:flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-all backdrop-blur-sm font-medium">
                             <i class="fas fa-chart-pie"></i>
                             <span>Análisis</span>
@@ -63,17 +52,28 @@
                     </div>
                 </div>
             </div>
+        </div>
     </header>
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 relative">
+        <section class="backup-tools" aria-label="Copias y datos de ejemplo">
+            <p>Un registro = total vendido en un turno. Importes en soles · Fecha de Perú.</p>
+            <div>
+                <button type="button" onclick="document.getElementById('import-file').click()">Restaurar copia</button>
+                <button type="button" onclick="restaurarDemo()">Recargar ejemplo</button>
+                <button type="button" onclick="descargarOriginal()">Descargar original</button>
+            </div>
+            <input id="import-file" type="file" accept=".json,application/json" hidden>
+        </section>
+        <p id="storage-alert" class="storage-alert" role="alert" hidden></p>
         <!-- Floating FABs Mobile -->
         <div class="md:hidden fixed bottom-24 right-4 flex flex-col gap-3 z-30">
-            <button onclick="exportarDatos()"
+            <button onclick="exportarDatos()" aria-label="Descargar copia JSON"
                 class="bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all">
                 <i class="fas fa-download text-xl"></i>
             </button>
-            <button onclick="abrirDashboard()"
+            <button onclick="abrirDashboard()" aria-label="Abrir análisis"
                 class="bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition-all">
                 <i class="fas fa-chart-pie text-xl"></i>
             </button>
@@ -147,7 +147,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-user text-blue-500 mr-1"></i> Vendedor
                             </label>
-                            <input type="text" id="vendedor" list="lista-vendedores" placeholder="Nombre"
+                            <input type="text" id="vendedor" maxlength="100" list="lista-vendedores" placeholder="Nombre"
                                 class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none">
                             <datalist id="lista-vendedores"></datalist>
                         </div>
@@ -168,9 +168,9 @@
                             <i class="fas fa-stopwatch"></i> Análisis de Horario
                         </p>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Hora Salida -->
+                            <!-- Hora Inicio -->
                             <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Hora Salida</label>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Hora Inicio</label>
                                 <div class="flex gap-1">
                                     <select id="hora-inicio-h"
                                         class="w-full px-2 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-sm appearance-none text-center">
@@ -190,12 +190,7 @@
                                     </select>
                                     <span class="text-gray-400 self-center">:</span>
                                     <select id="hora-inicio-m"
-                                        class="w-full px-2 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-sm appearance-none text-center">
-                                        <option value="00">00</option>
-                                        <option value="15">15</option>
-                                        <option value="30">30</option>
-                                        <option value="45">45</option>
-                                    </select>
+                                        class="w-full px-2 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-sm appearance-none text-center"><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option></select>
                                     <select id="hora-inicio-ampm"
                                         class="w-full px-2 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-sm appearance-none text-center font-medium text-orange-600">
                                         <option value="AM">AM</option>
@@ -225,12 +220,7 @@
                                     </select>
                                     <span class="text-gray-400 self-center">:</span>
                                     <select id="hora-fin-m"
-                                        class="w-full px-2 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-sm appearance-none text-center">
-                                        <option value="00">00</option>
-                                        <option value="15">15</option>
-                                        <option value="30">30</option>
-                                        <option value="45">45</option>
-                                    </select>
+                                        class="w-full px-2 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-sm appearance-none text-center"><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option></select>
                                     <select id="hora-fin-ampm"
                                         class="w-full px-2 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-sm appearance-none text-center font-medium text-orange-600">
                                         <option value="AM">AM</option>
@@ -246,7 +236,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             <i class="fas fa-sticky-note text-yellow-500 mr-1"></i> Notas
                         </label>
-                        <textarea id="notas" rows="2" placeholder="Ej: Día lluvioso, poca gente..."
+                        <textarea id="notas" maxlength="1000" rows="2" placeholder="Ej: Día lluvioso, poca gente..."
                             class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none resize-none"></textarea>
                     </div>
 
@@ -268,11 +258,11 @@
 
                 <!-- Filtros -->
                 <div class="flex gap-2 mb-4 flex-wrap">
-                    <button onclick="filtrarVentas('todos')"
+                    <button onclick="filtrarVentas('todos', this)" data-filter="todos"
                         class="filtro-btn active px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500 text-white transition-all">Todos</button>
-                    <button onclick="filtrarVentas('semana')"
+                    <button onclick="filtrarVentas('semana', this)" data-filter="semana"
                         class="filtro-btn px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-amber-100 transition-all">Semana</button>
-                    <button onclick="filtrarVentas('mes')"
+                    <button onclick="filtrarVentas('mes', this)" data-filter="mes"
                         class="filtro-btn px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-amber-100 transition-all">Mes</button>
                 </div>
 
@@ -285,7 +275,7 @@
     </main>
 
     <!-- Modal de Dashboard / Analíticas -->
-    <div id="modal-dashboard"
+    <div id="modal-dashboard" role="dialog" aria-modal="true" aria-label="Análisis de ventas"
         class="fixed inset-0 bg-gray-900 bg-opacity-95 hidden z-50 overflow-y-auto backdrop-blur-sm">
         <div class="min-h-screen px-4 py-8">
             <!-- Header Dashboard -->
@@ -295,9 +285,9 @@
                         class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500">
                         <i class="fas fa-chart-line mr-2 text-amber-400"></i>Dashboard de Ventas
                     </h2>
-                    <p class="text-gray-400 text-sm mt-1">Análisis inteligente de tu negocio</p>
+                    <p class="text-gray-400 text-sm mt-1">Resumen de los turnos registrados · Datos locales</p>
                 </div>
-                <button onclick="cerrarDashboard()"
+                <button onclick="cerrarDashboard()" aria-label="Cerrar análisis"
                     class="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all">
                     <i class="fas fa-times text-xl"></i>
                 </button>
@@ -310,19 +300,19 @@
                 <div class="col-span-1 md:col-span-2 lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
                     <!-- Mejor Día -->
                     <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
-                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Mejor Día para Vender</p>
+                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Mayor promedio por turno</p>
                         <p id="kpi-mejor-dia" class="text-2xl font-bold text-amber-400">--</p>
-                        <p id="kpi-mejor-dia-desc" class="text-xs text-gray-500 mt-1">Base: Promedio de ventas</p>
+                        <p id="kpi-mejor-dia-desc" class="text-xs text-gray-500 mt-1">Base: Promedio por registro</p>
                     </div>
                     <!-- Hora Ideal Salida -->
                     <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
-                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Hora Ideal de Salida</p>
+                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Inicio del mayor turno</p>
                         <p id="kpi-hora-ideal" class="text-2xl font-bold text-green-400">--:--</p>
-                        <p class="text-xs text-gray-500 mt-1">Mayor eficiencia en ventas</p>
+                        <p class="text-xs text-gray-500 mt-1">Turno con mayor ingreso registrado</p>
                     </div>
                     <!-- Velocidad de Venta -->
                     <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
-                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Velocidad Promedio</p>
+                        <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Ingreso por hora</p>
                         <p id="kpi-velocidad" class="text-2xl font-bold text-blue-400">S/ 0 / h</p>
                         <p class="text-xs text-gray-500 mt-1">Soles generados por hora</p>
                     </div>
@@ -330,7 +320,7 @@
                     <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
                         <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Duración Jornada</p>
                         <p id="kpi-duracion" class="text-2xl font-bold text-purple-400">0h 0m</p>
-                        <p class="text-xs text-gray-500 mt-1">Tiempo promedio en calle</p>
+                        <p class="text-xs text-gray-500 mt-1">Promedio de turnos con horario</p>
                     </div>
                 </div>
 
@@ -344,8 +334,8 @@
 
                 <!-- Gráfico: Salida vs Resultado (Scatter) -->
                 <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 col-span-1 shadow-xl">
-                    <h3 class="text-lg font-semibold text-white mb-4">🕒 Hora de Salida vs Ventas</h3>
-                    <p class="text-xs text-gray-400 mb-2">¿Salir antes garantiza más ventas?</p>
+                    <h3 class="text-lg font-semibold text-white mb-4">🕒 Hora de inicio vs ventas</h3>
+                    <p class="text-xs text-gray-400 mb-2">Cada punto representa un turno registrado.</p>
                     <div class="h-64">
                         <canvas id="chart-hora-impacto"></canvas>
                     </div>
@@ -354,7 +344,7 @@
                 <!-- Gráfico: Duración vs Venta -->
                 <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 col-span-1 shadow-xl">
                     <h3 class="text-lg font-semibold text-white mb-4">⏳ Duración vs Ingreso</h3>
-                    <p class="text-xs text-gray-400 mb-2">Relación tiempo invertido / Ganancia</p>
+                    <p class="text-xs text-gray-400 mb-2">Ingresos por turno; no se descuentan costos.</p>
                     <div class="h-64">
                         <canvas id="chart-duracion"></canvas>
                     </div>
@@ -363,13 +353,13 @@
                 <!-- Insights Texto -->
                 <div
                     class="bg-gradient-to-br from-indigo-900 to-blue-900 rounded-2xl p-6 col-span-1 md:col-span-2 shadow-xl border border-indigo-700/50">
-                    <h3 class="text-lg font-semibold text-white mb-4">💡 Insights Generados por IA</h3>
+                    <h3 class="text-lg font-semibold text-white mb-4">💡 Lectura de los registros</h3>
                     <div id="insights-container" class="space-y-3">
                         <!-- Se llenará con JS -->
                         <div class="flex items-start gap-3 text-indigo-100 bg-indigo-800/30 p-3 rounded-lg">
                             <i class="fas fa-lightbulb text-yellow-400 mt-1"></i>
                             <p class="text-sm">Registra más ventas incluyendo horarios de inicio y fin para obtener
-                                recomendaciones precisas sobre tu eficiencia.</p>
+                                un análisis descriptivo de tus registros.</p>
                         </div>
                     </div>
                 </div>
@@ -379,15 +369,15 @@
     </div>
 
     <!-- Modal de Edición (Existente) -->
-    <div id="modal-editar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <!-- ... (código existente del modal de edición se mantiene igual, no lo toco) ... -->
+    <div id="modal-editar" role="dialog" aria-modal="true" aria-label="Editar venta" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+
         <div
             class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform scale-95 opacity-0 transition-all modal-content">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold text-gray-800">
                     <i class="fas fa-edit text-amber-500 mr-2"></i>Editar Venta
                 </h3>
-                <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <button onclick="cerrarModal()" aria-label="Cerrar edición" class="text-gray-400 hover:text-gray-600 transition-colors">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -409,7 +399,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Vendedor</label>
-                    <input type="text" id="editar-vendedor" list="lista-vendedores"
+                    <input type="text" id="editar-vendedor" maxlength="100" list="lista-vendedores"
                         class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none">
                 </div>
 
@@ -434,12 +424,7 @@
                                 <option value="12">12</option>
                             </select>
                             <select id="editar-hora-inicio-m"
-                                class="w-full px-1 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-xs appearance-none text-center">
-                                <option value="00">00</option>
-                                <option value="15">15</option>
-                                <option value="30">30</option>
-                                <option value="45">45</option>
-                            </select>
+                                class="w-full px-1 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-xs appearance-none text-center"><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option></select>
                             <select id="editar-hora-inicio-ampm"
                                 class="w-full px-1 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-xs appearance-none text-center">
                                 <option value="AM">AM</option>
@@ -467,12 +452,7 @@
                                 <option value="12">12</option>
                             </select>
                             <select id="editar-hora-fin-m"
-                                class="w-full px-1 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-xs appearance-none text-center">
-                                <option value="00">00</option>
-                                <option value="15">15</option>
-                                <option value="30">30</option>
-                                <option value="45">45</option>
-                            </select>
+                                class="w-full px-1 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-xs appearance-none text-center"><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option></select>
                             <select id="editar-hora-fin-ampm"
                                 class="w-full px-1 py-2 rounded-lg border border-gray-200 focus:border-amber-500 outline-none bg-white text-xs appearance-none text-center">
                                 <option value="AM">AM</option>
@@ -484,7 +464,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
-                    <textarea id="editar-notas" rows="2"
+                    <textarea id="editar-notas" maxlength="1000" rows="2"
                         class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none resize-none"></textarea>
                 </div>
 
@@ -503,7 +483,7 @@
     </div>
 
     <!-- Toast de Notificación -->
-    <div id="toast"
+    <div id="toast" role="status" aria-live="polite"
         class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all z-50 flex items-center gap-2">
         <i class="fas fa-check-circle"></i>
         <span id="toast-mensaje">Venta registrada correctamente</span>
@@ -515,12 +495,13 @@
             <p class="flex items-center justify-center gap-2">
                 <span>🍗 MolleVentas</span>
                 <span class="text-gray-600">|</span>
-                <span>Sistema de Ventas v1.0</span>
+                <span>Registro de ventas por turno</span>
             </p>
-            <p class="text-sm mt-2 text-gray-500">Diseñado para crecer contigo 🚀</p>
+            <p class="text-sm mt-2 text-gray-500">Prototipo local · Sin facturación, inventario ni conexión bancaria</p>
         </div>
     </footer>
 
+    <script src="js/core.js"></script>
     <script src="js/app.js"></script>
     <script src="js/analytics.js"></script>
 </body>

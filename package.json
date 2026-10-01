@@ -1,0 +1,16 @@
+{
+  "name": "molleventas",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Registro local de ventas por turno en soles con demo de portafolio",
+  "scripts": {
+    "test": "node --test tests/core.test.cjs",
+    "test:browser": "node tests/browser-smoke.cjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}
