@@ -14,46 +14,31 @@ Registro de ventas por turno en soles, con historial, análisis descriptivo y co
 
 *Captura real del prototipo con ventas ficticias. Cada registro representa el total de un turno.*
 
-[Acerca del proyecto](#acerca-del-proyecto) · [Capturas](#capturas) · [Uso e instalación](#uso-e-instalación)
+[Acerca del proyecto](#acerca-del-proyecto) · [Capturas](#capturas) · [Recorrido](#en-el-día-a-día) · [Tecnología](#cómo-está-construido) · [Uso local](#uso-local)
 
 </div>
 
 ## Acerca del proyecto
 
-MolleVentas parte del cierre de un turno: fecha, monto, vendedor y, opcionalmente, horario y notas. El historial conserva esos registros y permite editarlos o consultar períodos concretos sin separar la captura de datos de su revisión.
+En un puesto de comida, el cierre de cada turno deja un monto, un vendedor y, a veces, un horario o una observación. MolleVentas conserva esos datos en un historial editable para que la consulta del día, la semana o el mes parta de los mismos registros.
 
-La vista de análisis utiliza las ventas registradas para comparar días, duración e ingresos por hora. Las copias JSON permiten conservar y recuperar la información del navegador; el alcance se mantiene en el registro de turnos, sin inventario ni emisión de comprobantes.
+El análisis permite recorrer los ingresos y la duración de los turnos sin preparar una segunda hoja para cada comparación. Las copias JSON conservan la información del navegador y permiten recuperarla. Cada registro representa el total vendido en un turno; la aplicación se concentra en ese control, sin inventario ni emisión de comprobantes.
+
+## En el día a día
+
+| Dentro del proyecto | Detalle |
+| --- | --- |
+| Registro por turno | Fecha, monto y vendedor, con horario y notas opcionales. |
+| Historial editable | Consulta por período, edición y eliminación de registros. |
+| Análisis descriptivo | Comparación de días, duración de turnos e ingresos por hora. |
+| Cálculo de importes | Sumas en céntimos y fechas de negocio en America/Lima. |
+| Copias de trabajo | Exportación JSON y restauración validada desde el navegador. |
 
 ## Capturas
 
-<details>
-<summary><strong>Análisis de los turnos registrados</strong></summary>
+### Análisis de los turnos registrados
 
 ![Análisis de los turnos registrados](assets/screenshots/screenshot-pos-analytics.png)
-
-</details>
-
-<details>
-<summary><strong>Registro desde el móvil</strong></summary>
-
-![Registro desde el móvil](assets/screenshots/screenshot-pos-mobile.png)
-
-</details>
-
-## Uso e instalación
-
-<details>
-<summary><strong>Ver el recorrido, las instrucciones y las notas técnicas</strong></summary>
-
-## Abrir la aplicación
-
-No necesita backend ni instalación de paquetes para funcionar. Desde la carpeta del proyecto:
-
-```bash
-python -m http.server 5084 --bind 127.0.0.1
-```
-
-Abre `http://127.0.0.1:5084`. También se puede publicar la carpeta en GitHub Pages. Estilos, gráficos, iconos y fuentes están incluidos; la aplicación no hace solicitudes a servicios externos.
 
 ## Explorar la demo
 
@@ -82,7 +67,33 @@ La demo funciona en un navegador y conserva los cambios en ese mismo origen/disp
 
 Las cifras de la demo son ficticias. Este repositorio no presenta ahorros de tiempo o resultados comerciales medidos. El análisis es JavaScript determinista y Chart.js; no usa IA.
 
-## Verificar el código
+## Cómo está construido
+
+| Área | Tecnología |
+| --- | --- |
+| Interfaz | HTML, CSS, Tailwind y JavaScript |
+| Gráficos | Chart.js |
+| Persistencia | localStorage y copias JSON |
+| Recursos | Fuentes e iconos incluidos localmente |
+| Verificación | Node.js y Playwright |
+
+## Uso local
+
+<details>
+<summary><strong>Ejecutar en tu equipo</strong></summary>
+
+No necesita backend ni instalación de paquetes para funcionar. Desde la carpeta del proyecto:
+
+```bash
+python -m http.server 5084 --bind 127.0.0.1
+```
+
+Abre `http://127.0.0.1:5084`. También se puede publicar la carpeta en GitHub Pages. Estilos, gráficos, iconos y fuentes están incluidos; la aplicación no hace solicitudes a servicios externos.
+
+</details>
+
+<details>
+<summary><strong>Verificar el código</strong></summary>
 
 Las reglas de negocio se prueban sin instalar dependencias, con Node.js 18 o posterior:
 
@@ -101,7 +112,10 @@ npm run test:browser
 
 La prueba de navegador usa un perfil temporal aislado y genera datos ficticios; no modifica el almacenamiento de tu navegador habitual. [Resultados y cobertura](docs/verification.md).
 
-## Archivos
+</details>
+
+<details>
+<summary><strong>Archivos</strong></summary>
 
 | Ruta | Contenido |
 |---|---|
@@ -113,17 +127,21 @@ La prueba de navegador usa un perfil temporal aislado y genera datos ficticios; 
 | `assets/screenshots/` | Capturas auténticas para GitHub y Upwork |
 | `assets/vendor/`, `assets/webfonts/` | Recursos locales y licencias de terceros |
 
-## Imágenes para portafolio
+</details>
+
+<details>
+<summary><strong>Imágenes para portafolio</strong></summary>
 
 - `assets/screenshots/upwork-molleventas-4x3.png`: vista de 1440 × 1080, proporción 4:3, lista para usar en Upwork.
 - `assets/screenshots/screenshot-pos-main.png`: formulario e historial en escritorio.
 - `assets/screenshots/screenshot-pos-analytics.png`: análisis con gráficos reales del prototipo.
-- `assets/screenshots/screenshot-pos-mobile.png`: recorrido completo en 360 px.
-- `assets/screenshots/screenshot-pos-mobile-analytics.png`: primera pantalla del análisis móvil.
 
 Todas fueron capturadas de la aplicación funcionando con registros ficticios. No son imágenes generadas ni pruebas de ventas reales.
 
-## Recursos visuales
+</details>
+
+<details>
+<summary><strong>Recursos visuales</strong></summary>
 
 Tailwind CSS 3.4.17 (CSS de utilidades generado), Chart.js 4.4.9, Font Awesome Free 6.4.0 y Poppins se incluyen localmente. Sus licencias se conservan en `assets/vendor/`. [Criterio de presentación](docs/design.md).
 
