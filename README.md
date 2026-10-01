@@ -1,8 +1,49 @@
-MolleVentas es un registro web de ventas por turno en soles, con historial, copias JSON y análisis descriptivo para un puesto de comida.
+<div align="center">
 
-![MolleVentas en uso: formulario e historial](assets/screenshots/upwork-molleventas-4x3.png)
+# MolleVentas
 
-[Probar demo](https://enybyy.github.io/pos-sales-management-system/) · [Ver análisis](assets/screenshots/screenshot-pos-analytics.png) · [Ver versión móvil](assets/screenshots/screenshot-pos-mobile.png)
+Registro de ventas por turno en soles, con historial, análisis descriptivo y copias de los datos en JSON.
+
+<a href="https://enybyy.github.io/pos-sales-management-system/"><img src="docs/media/demo.svg" width="360" alt="Abrir demo"></a>
+
+<p><a href="https://github.com/Enybyy"><img src="docs/media/github.svg" width="112" alt="GitHub de Eliud Rojas Mendoza"></a>
+<a href="https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/"><img src="docs/media/linkedin.svg" width="112" alt="LinkedIn de Eliud Rojas Mendoza"></a>
+<a href="https://www.upwork.com/freelancers/~01471ca462b236e8e5"><img src="docs/media/upwork.svg" width="112" alt="Upwork de Eliud Rojas Mendoza"></a></p>
+
+[![MolleVentas en uso](assets/screenshots/upwork-molleventas-4x3.png)](https://enybyy.github.io/pos-sales-management-system/)
+
+*Captura real del prototipo con ventas ficticias. Cada registro representa el total de un turno.*
+
+[Acerca del proyecto](#acerca-del-proyecto) · [Capturas](#capturas) · [Uso e instalación](#uso-e-instalación)
+
+</div>
+
+## Acerca del proyecto
+
+MolleVentas parte del cierre de un turno: fecha, monto, vendedor y, opcionalmente, horario y notas. El historial conserva esos registros y permite editarlos o consultar períodos concretos sin separar la captura de datos de su revisión.
+
+La vista de análisis utiliza las ventas registradas para comparar días, duración e ingresos por hora. Las copias JSON permiten conservar y recuperar la información del navegador; el alcance se mantiene en el registro de turnos, sin inventario ni emisión de comprobantes.
+
+## Capturas
+
+<details>
+<summary><strong>Análisis de los turnos registrados</strong></summary>
+
+![Análisis de los turnos registrados](assets/screenshots/screenshot-pos-analytics.png)
+
+</details>
+
+<details>
+<summary><strong>Registro desde el móvil</strong></summary>
+
+![Registro desde el móvil](assets/screenshots/screenshot-pos-mobile.png)
+
+</details>
+
+## Uso e instalación
+
+<details>
+<summary><strong>Ver el recorrido, las instrucciones y las notas técnicas</strong></summary>
 
 ## Abrir la aplicación
 
@@ -86,4 +127,16 @@ Todas fueron capturadas de la aplicación funcionando con registros ficticios. N
 
 Tailwind CSS 3.4.17 (CSS de utilidades generado), Chart.js 4.4.9, Font Awesome Free 6.4.0 y Poppins se incluyen localmente. Sus licencias se conservan en `assets/vendor/`. [Criterio de presentación](docs/design.md).
 
-Desarrollado por [Eliud Rojas Mendoza](https://github.com/Enybyy).
+</details>
+
+---
+
+<div align="center">
+
+**Eliud Rojas Mendoza · Enybyy**
+
+<p><a href="https://github.com/Enybyy"><img src="docs/media/github.svg" width="112" alt="GitHub de Eliud Rojas Mendoza"></a>
+<a href="https://www.linkedin.com/in/eliud-rojas-mendoza-414652212/"><img src="docs/media/linkedin.svg" width="112" alt="LinkedIn de Eliud Rojas Mendoza"></a>
+<a href="https://www.upwork.com/freelancers/~01471ca462b236e8e5"><img src="docs/media/upwork.svg" width="112" alt="Upwork de Eliud Rojas Mendoza"></a></p>
+
+</div>
